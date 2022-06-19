@@ -38,6 +38,6 @@
 	const ICON_BIRD2     ; 33
 
 
-ICON_TRADEBUBBLE EQU $e
+DEF ICON_TRADEBUBBLE EQU $e
 
-ICONOFFSET EQU $40 ; difference between alternating icon frames' tile IDs
+DEF ICONOFFSET EQU $40 ; difference between alternating icon frames' tile IDs
