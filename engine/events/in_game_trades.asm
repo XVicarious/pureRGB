@@ -102,11 +102,16 @@ InGameTrade_DoTrade:
 	ld a, [wcf91]
 	cp b
 	ld a, $2
-	jr nz, .tradeFailed ; jump if the selected mon's species is not the required one
+	jp nz, .tradeFailed ; jump if the selected mon's species is not the required one
 	ld a, [wWhichPokemon]
-	ld hl, wPartyMon1Level
+	ld hl, wPartyMon1Flags
 	ld bc, wPartyMon2 - wPartyMon1
 	call AddNTimes
+	ld a, [hl]
+	and 1
+	ld [wIsAltPalettePkmn], a ; is the player's pokemon they're trading away alternate palette
+	ld bc, wPartyMon1Level - wPartyMon1Flags
+	add hl, bc ; go to level
 	ld a, [hl]
 	ld [wCurEnemyLVL], a
 	ld hl, wCompletedInGameTradeFlags
@@ -120,6 +125,7 @@ InGameTrade_DoTrade:
 	push af
 	ld a, [wCurEnemyLVL]
 	push af
+	call GetTradeMonPalette ; stores whether the mon you receive in this in-game trade has an alternate palette into wIsAltPalettePkmnData
 	call LoadHpBarAndStatusTilePatterns
 	call InGameTrade_PrepareTradeData
 	predef InternalClockTradeAnim
@@ -148,9 +154,31 @@ InGameTrade_DoTrade:
 	scf
 .tradeSucceeded
 	ld [wInGameTradeTextPointerTableIndex], a
+	ld a, 0
+	ld [wIsAltPalettePkmnData], a ; clear any alt palette flags
 	ret
 
-InGameTrade_RestoreScreen:
+GetTradeMonPalette:
+	ld a, [wWhichTrade]
+	ld hl, TradeMonPalettes
+	cp 8
+	jr c, .firstByte
+	inc hl
+.firstByte
+	and a
+	ld b, a
+	ld a, [hl]
+	jr z, .clearAndTestBit
+.loopShiftRight ; keep shifting until the bit we want to test is bit 0
+	srl a
+	dec b
+	jr nz, .loopShiftRight
+.clearAndTestBit
+	and 1 ; zero every other bit than bit 0
+	ld [wIsAltPalettePkmnData], a ; a now contains the flag value for whether the palette is alt or original.
+	ret
+
+InGameTrade_RestoreScreen::
 	call GBPalWhiteOutWithDelay3
 	call RestoreScreenTilesAndReloadTilePatterns
 	call ReloadTilesetTilePatterns
@@ -237,6 +265,7 @@ InGameTradeTextPointers:
 	dw TradeTextPointers1
 	dw TradeTextPointers2
 	dw TradeTextPointers3
+	dw TradeTextPointers4
 
 TradeTextPointers1:
 	dw WannaTrade1Text
@@ -258,6 +287,13 @@ TradeTextPointers3:
 	dw WrongMon3Text
 	dw Thanks3Text
 	dw AfterTrade3Text
+
+TradeTextPointers4:
+	dw WannaTrade1Text
+	dw NoTrade1Text
+	dw WrongMon1Text
+	dw Thanks1TextPrompt
+	dw AfterTrade1Text
 
 ConnectCableText:
 	text_far _ConnectCableText
@@ -283,6 +319,11 @@ WrongMon1Text:
 
 Thanks1Text:
 	text_far _Thanks1Text
+	text_end
+
+Thanks1TextPrompt:
+	text_far _Thanks1Text
+	text_promptbutton
 	text_end
 
 AfterTrade1Text:

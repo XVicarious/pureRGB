@@ -8,7 +8,7 @@ INCLUDE "vram.asm"
 
 SECTION "Audio RAM", WRAM0
 
-wUnusedC000:: db
+wUnusedC000:: db ; used for various temporary flags
 
 wSoundID:: db
 
@@ -228,6 +228,7 @@ wPartyAndBillsPCSavedMenuItem:: db
 
 ; It is used by the bag list to remember the cursor position while the menu
 ; isn't active.
+; it's reset at the start of battle
 wBagSavedMenuItem:: db
 
 ; It is used by the start menu to remember the cursor position while the menu
@@ -244,7 +245,8 @@ wPlayerMonNumber:: db
 ; the address of the menu cursor's current location within wTileMap
 wMenuCursorLocation:: dw
 
-	ds 2
+wSavedFishingItem:: db ; used to keep the fishing rod item index after doing a fishing battle
+wSavedFishingItemOffset:: db ; used to keep the fishing rod item offset after doing a fishing battle
 
 ; how many times should HandleMenuInput poll the joypad state before it returns?
 wMenuJoypadPollCount:: db
@@ -264,7 +266,7 @@ wMenuWatchMovingOutOfBounds:: db
 
 wTradeCenterPointerTableIndex:: db
 
-	ds 1
+wExtraSavedStartMenuIndex:: db ; used to save the current cursor index in the start menu (when we want it to persist after battle)
 
 ; destination pointer for text output
 ; this variable is written to, but is never read from
@@ -315,8 +317,10 @@ wMonDataLocation:: db
 ; set to 0 if you can't go past the top or bottom of the menu
 wMenuWrappingEnabled:: db
 
-; whether to check for 180-degree turn (0 = don't, 1 = do)
-wCheckFor180DegreeTurn:: db
+; A counter that is incremented when holding A+B while standing still in the overworld. 
+; After this counter reaches a certain amount, the player will be in "turn around without moving forward" mode.
+; Releasing either button will reset this counter.
+wDirectionChangeModeCounter:: db
 
 	ds 1
 
@@ -366,6 +370,9 @@ wTrainerCardBlkPacket:: ds $40
 
 NEXTU
 wHallOfFame:: ds HOF_TEAM
+; bit array of whether each pokemon in current hall of fame team data should use an alt color palette
+; only uses bits 0-5, since the party size is 6.
+wHallOfFamePalettes:: db 
 
 NEXTU
 wNPCMovementDirections:: ds 180
@@ -506,10 +513,12 @@ wPlayerMonMinimized:: db
 
 ; number of hits by enemy in attacks like Double Slap, etc.
 wEnemyNumHits:: ; db
+
 ; the amount of damage accumulated by the enemy while biding
-wEnemyBideAccumulatedDamage:: dw
+wEnemyBideAccumulatedDamage:: dw ; CHANGED: bide effect changed to normal buff move
 
 	ds 8
+
 ENDU
 
 ; This union spans 39 bytes.
@@ -574,7 +583,6 @@ ENDU
 	ds 1
 
 wNPCMovementDirections2Index::
-wUnusedCD37::
 ; number of items in wFilteredBagItems list
 wFilteredBagItemsCount:: db
 
@@ -773,13 +781,27 @@ wTrainerInfoTextBoxWidth:: db
 wTrainerInfoTextBoxNextRowOffset:: db
 
 NEXTU
+; options page 1
 wOptionsTextSpeedCursorX:: db
 wOptionsBattleAnimCursorX:: db
 wOptionsBattleStyleCursorX:: db
 wOptionsCancelCursorX:: db
-wOptionsBackSpritesCursorX:: db
-wOptionsBulbasaurSpriteCursorX:: db
-wOptionsBlastoiseSpriteCursorX:: db
+; options page 2
+wOptionsPage2Option1CursorX:: db
+wOptionsPage2Option2CursorX:: db
+wOptionsPage2Option3CursorX:: db
+wOptionsPage2Option4CursorX:: db
+wOptionsPage2Option5CursorX:: db
+wOptionsPage2Option6CursorX:: db
+; options page 3
+wOptionsNidorinoSpriteCursorX:: db
+wOptionsGolbatSpriteCursorX:: db
+wOptionsMankeySpriteCursorX:: db
+wOptionsArcanineSpriteCursorX:: db
+wOptionsExeggutorSpriteCursorX:: db
+wOptionsMewtwoSpriteCursorX:: db
+
+;14 bytes remaining in union
 
 NEXTU
 ; tile ID of the badge number being drawn
@@ -846,6 +868,7 @@ wRodResponse::
 	db
 ENDU
 
+
 ; 0 = neither
 ; 1 = warp pad
 ; 2 = hole
@@ -870,7 +893,22 @@ wRightGBMonSpecies:: db
 ; bit 6: tried pushing against boulder once (you need to push twice before it will move)
 wFlags_0xcd60:: db
 
-	ds 9
+	ds 1
+
+wListWithTMText:: db ; whether the current list menu can contain TMs and should print their moves
+wTMTextShown:: db ; whether text for a TM is visible in a menu
+wDamageIntention:: db ; in battle, the amount of damage a move will do before doing it (used for high jump kick / jump kick crash effect)
+wLowHealthTonePairs:: db ;in battle, used as a counter for low hp alarm tone pairs
+wSpiralBallsDelay:: db
+wIsAltPalettePkmn:: db ;a flag for features related to alternate pokemon color palettes, set in these scenarios:
+;1 - set prior to loading the palette of a pokemon that should have an alternate palette, reset upon showing the pokemon sprite
+;2 - set as a storage value for "which wild pokemon slot has been encountered" when figuring out if that slot is an alternate palette pokemon
+;if this flag is 0 the default palette will be used.
+wIsAltPalettePkmnData:: db ;a flag for features related to alternate pokemon color palettes, set in these scenarios:
+;1 - set prior to loading the data of a pokemon into wram in order to insert the flag for alternate palette into its data permanently
+;stays set until the next pokemon is loaded.
+
+	ds 1
 
 ; This has overlapping related uses.
 ; When the player tries to use an item or use certain field moves, 0 is stored
@@ -1071,7 +1109,7 @@ wGymCityName:: ds 17
 
 wGymLeaderName:: ds NAME_LENGTH
 
-wItemList:: ds 16
+ds 16 ;used to be wItemList::
 
 wListPointer:: dw
 
@@ -1324,9 +1362,8 @@ wEnemyDisabledMove:: db
 
 UNION
 ; the amount of damage accumulated by the player while biding
-wPlayerBideAccumulatedDamage:: dw
-
-NEXTU
+; wPlayerBideAccumulatedDamage:: dw ; CHANGED: bide effect changed to normal move
+; NEXTU
 wUnknownSerialCounter2:: dw
 
 NEXTU
@@ -1543,10 +1580,10 @@ wMonHBackSprite:: dw
 wMonHMoves:: ds NUM_MOVES
 wMonHGrowthRate:: db
 wMonHLearnset:: flag_array NUM_TMS + NUM_HMS
-wMonHPicBank:: dw
-wMonHBackPicBank:: dw
-wMonHAltFrontSprite:: dw
-wMonHAltBackSprite:: dw
+wMonHPicBank:: dw ; shifts
+wMonHBackPicBank:: dw ; shifts
+wMonHAltFrontSprite:: dw ; shifts
+wMonHAltBackSprite:: dw ; shifts
     ds 1
 wMonHeaderEnd::
 
@@ -1566,6 +1603,7 @@ wMoves:: ds NUM_MOVES
 
 wMoveNum:: db
 
+wItemList::
 wMovesString:: ds 56
 
 wUnusedD119:: db
@@ -1661,7 +1699,10 @@ wSavedSpriteScreenX:: db
 wSavedSpriteMapY:: db
 wSavedSpriteMapX:: db
 
-	ds 5
+	ds 3
+
+wWhatStat:: db ; contains the stat currently being modified by a stat changing move
+wWhichStatMod:: db ; contains the stat mod type currently being carried out
 
 wWhichPrize:: db
 
@@ -1753,24 +1794,34 @@ wPokedexOwnedEnd::
 wPokedexSeen:: flag_array NUM_POKEMON
 wPokedexSeenEnd::
 
-wNumBagItems:: db
-; item, quantity
-wBagItems:: ds BAG_ITEM_CAPACITY * 2 + 1
+;;;;;
+UNION
+
+ds 42 ; wNumBagItems and wBagItems used to be here
+
+NEXTU
+
+wExtraMissableObjectFlags:: flag_array NUM_EXTRA_HS_OBJECTS ; max size 42
+wExtraMissableObjectFlagsEnd::
+
+ENDU
+;;;;;
 
 wPlayerMoney:: ds 3 ; BCD
 
 wRivalName:: ds NAME_LENGTH
 
-; bit 7 = battle animation
-; 0: On
-; 1: Off
-; bit 6 = battle style
-; 0: Shift
-; 1: Set
 ; bits 0-3 = text speed (number of frames to delay after printing a letter)
 ; 1: Fast
 ; 3: Medium
 ; 5: Slow
+; bits 4-5 = padding
+; bit 6 = battle style
+; 0: Shift
+; 1: Set
+; bit 7 = battle animation
+; 0: On
+; 1: Off
 wOptions:: db
 
 wObtainedBadges:: flag_array NUM_BADGES
@@ -1846,7 +1897,30 @@ wWarpEntries:: ds 32 * 4 ; Y, X, warp ID, map ID
 ; if $ff, the player's coordinates are not updated when entering the map
 wDestinationWarpID:: db
 
-	ds 128
+
+
+UNION
+; original size of this empty space
+ds 128
+
+NEXTU
+
+wPocketAbraNick:: ds NAME_LENGTH
+
+;;;; moved from after wPokedexSeenEnd
+wNumBagItems:: db
+; item, quantity
+wBagItems:: ds BAG_ITEM_CAPACITY * 2 + 1
+;;;;
+
+wWildMonPalettes:: ds 3 ; flag array for the current location of which wild pokemon should use alt palettes
+
+wColorSwapsUsed:: db ; how many times the player has used the color changer
+wBoosterChipActive:: db ; whether the player gets boosted EXP from the effects of the boosterchip
+
+; 50 bytes remaining in union
+
+ENDU
 
 ; number of signs in the current map (up to 16)
 wNumSigns:: db
@@ -1940,14 +2014,15 @@ wMissableObjectList:: ds 16 * 2 + 1
 wGameProgressFlags::
 wOaksLabCurScript:: db
 wPalletTownCurScript:: db
-	ds 1
+wCeladonHotelCurScript:: db ; NEW
 wBluesHouseCurScript:: db
 wViridianCityCurScript:: db
-	ds 2
+wRoute7CurScript:: db ; NEW
+wRoute2CurScript:: db ; NEW
 wPewterCityCurScript:: db
 wRoute3CurScript:: db
 wRoute4CurScript:: db
-	ds 1
+wRoute5CurScript:: db ; NEW
 wViridianGymCurScript:: db
 wPewterGymCurScript:: db
 wCeruleanGymCurScript:: db
@@ -1964,12 +2039,18 @@ wMtMoonB2FCurScript:: db
 wSSAnne1FRoomsCurScript:: db
 wSSAnne2FRoomsCurScript:: db
 wRoute22CurScript:: db
-	ds 1
+wSilphCo1FCurScript:: db ; NEW
 wRedsHouse2FCurScript:: db
 wViridianMartCurScript:: db
 wRoute22GateCurScript:: db
 wCeruleanCityCurScript:: db
-	ds 7
+wCeruleanCave2FCurScript:: db ; NEW
+wMuseum2FCurScript:: db ; NEW
+wSafariZoneCenterCurScript:: db ; NEW
+wSafariZoneEastCurScript:: db ; NEW
+wSafariZoneNorthCurScript:: db ; NEW
+wSafariZoneWestCurScript:: db ; NEW
+wUndergroundPathNorthSouthCurScript:: db ;NEW
 wSSAnneBowCurScript:: db
 wViridianForestCurScript:: db
 wMuseum1FCurScript:: db
@@ -1981,7 +2062,7 @@ wRoute21CurScript:: db
 wSafariZoneGateCurScript:: db
 wRockTunnelB1FCurScript:: db
 wRockTunnel1FCurScript:: db
-	ds 1
+wUndergroundPathWestEastCurScript:: db ;NEW
 wRoute11CurScript:: db
 wRoute12CurScript:: db
 wRoute15CurScript:: db
@@ -2145,6 +2226,7 @@ wd72c:: db
 ; but they do not appear to affect anything. Bit 6 is reset after all battles
 ; and bit 7 is reset after trainer battles (but it's only set before trainer
 ; battles anyway).
+; Bit 7 decides if end battle text attempts to get printed.
 wd72d:: db
 
 ; bit 0: the player has received Lapras in the Silph Co. building
@@ -2285,7 +2367,30 @@ wUnusedDA38:: db
 ; mostly copied from map-specific map script pointer and written back later
 wCurMapScript:: db
 
-	ds 7
+
+; Current safari zone game type
+; 0 = Classic
+; 1 = Ranger Hunt
+; 2 = Free Roam
+wSafariType:: db 
+
+; bit 0 -> Squirtle sprite version: 0 = RB, 1 = RG
+; bit 1 -> Blastoise sprite version: 0 = RB, 1 = RG
+; bit 2 -> Pidgeot sprite version: 0 = RB, 1 = RG
+; bit 3 -> Nidorino sprite version: 0 = RB, 1 = RG
+; bit 4 -> Golbat sprite version: 0 = Y, 1 = RB
+; bit 5 -> Mankey sprite version: 0 = RB, 1 = RG
+; bit 6 -> Arcanine sprite version: 0 = RB, 1 = RG
+; bit 7 -> Mewtwo sprite version: 0 = RB, 1 = RG
+wSpriteOptions:: db
+
+; bit 0 -> Back sprites: 0 = RB, 1 = Space World
+; bit 1 -> Bulbasaur sprite version: 0 = RB, 1 = RG
+; bit 2 -> Exeggutor sprite version: 0 = Y, 1 = RB
+wSpriteOptions2:: db
+
+
+	ds 4
 
 wPlayTimeHours:: db
 wPlayTimeMaxed:: db
@@ -2306,11 +2411,6 @@ wDayCareMonName:: ds NAME_LENGTH
 wDayCareMonOT::   ds NAME_LENGTH
 
 wDayCareMon:: box_struct wDayCareMon
-
-; bit 0 -> Back sprites: 0 = RB, 1 = Space World
-; bit 1 -> Bulbasaur sprite version: 0 = RB, 1 = RG
-; bit 2 -> Blastoise sprite version: 0 = RB, 1 = RG
-wSpriteOptions:: db
 
 wMainDataEnd::
 

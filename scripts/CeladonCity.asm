@@ -23,6 +23,7 @@ CeladonCity_TextPointers:
 	dw CeladonCityText16
 	dw CeladonCityText17
 	dw CeladonCityText18
+	dw CeladonCityText19
 
 CeladonCityText1:
 	text_far _CeladonCityText1
@@ -46,7 +47,7 @@ CeladonCityText5:
 	jr nz, .asm_7053f
 	ld hl, TM41PreText
 	call PrintText
-	lb bc, TM_SOFTBOILED, 1
+	lb bc, TM_MEDITATE, 1
 	call GiveItem
 	jr c, .Success
 	ld hl, TM41NoRoomText
@@ -129,4 +130,8 @@ CeladonCityText17:
 
 CeladonCityText18:
 	text_far _CeladonCityText18
+	text_end
+
+CeladonCityText19:
+	text_far _CeladonCityText19
 	text_end

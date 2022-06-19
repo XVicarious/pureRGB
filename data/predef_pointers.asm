@@ -39,8 +39,9 @@ PredefPointers::
 	add_predef LearnMoveFromLevelUp
 	add_predef LearnMove
 	add_predef GetQuantityOfItemInBag
-	add_predef CheckForHiddenObjectOrBookshelfOrCardKeyDoor, $03 ; home bank
-	add_predef GiveItem, $03 ; home bank
+	add_predef GetIndexOfItemInBag
+	add_predef ShowExtraObject
+	add_predef HideExtraObject
 	add_predef ChangeBGPalColor0_4Frames
 	add_predef FindPathToPlayer
 	add_predef PredefShakeScreenVertically
@@ -50,7 +51,7 @@ PredefPointers::
 	add_predef UpdateHPBar
 	add_predef HPBarLength
 	add_predef Diploma_TextBoxBorder
-	add_predef DoubleOrHalveSelectedStats
+	add_predef UndoBurnParStats
 	add_predef ShowPokedexMenu
 	add_predef EvolutionAfterBattle
 	add_predef SaveSAVtoSRAM0
@@ -97,7 +98,7 @@ PredefPointers::
 	add_predef DoInGameTradeDialogue
 	add_predef HallOfFamePC
 	add_predef DisplayDexRating
-	add_predef _LeaveMapAnim, $1E ; wrong bank
+	add_predef ReplaceTileBlockNoRedraw
 	add_predef EnterMapAnim, $1E ; wrong bank
 	add_predef GetTileTwoStepsInFrontOfPlayer
 	add_predef CheckForCollisionWhenPushingBoulder

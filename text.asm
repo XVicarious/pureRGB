@@ -44,7 +44,6 @@ INCLUDE "text/PokemonMansion3F.asm"
 INCLUDE "text/PokemonMansionB1F.asm"
 INCLUDE "text/SafariZoneEast.asm"
 INCLUDE "text/SafariZoneNorth.asm"
-INCLUDE "text/SafariZoneWest.asm"
 INCLUDE "text/SafariZoneCenter.asm"
 INCLUDE "text/SafariZoneCenterRestHouse.asm"
 INCLUDE "text/SafariZoneSecretHouse.asm"
@@ -77,14 +76,17 @@ INCLUDE "text/ViridianForestSouthGate.asm"
 INCLUDE "text/MtMoonPokecenter.asm"
 INCLUDE "text/SaffronGates.asm"
 INCLUDE "text/Daycare.asm"
+; moved from Text 2
+INCLUDE "text/SafariZoneWest.asm"
 
 
 SECTION "Text 4", ROMX
 
 INCLUDE "text/Daycare_2.asm"
+INCLUDE "text/UndergroundPathNorthSouth.asm"
+INCLUDE "text/UndergroundPathEastWest.asm"
 INCLUDE "text/UndergroundPathRoute6.asm"
 INCLUDE "text/UndergroundPathRoute7.asm"
-INCLUDE "text/UndergroundPathRoute7Copy.asm"
 INCLUDE "text/UndergroundPathRoute8.asm"
 INCLUDE "text/RockTunnelPokecenter.asm"
 INCLUDE "text/RockTunnel1F.asm"
@@ -170,6 +172,7 @@ INCLUDE "text/CeruleanGym.asm"
 INCLUDE "text/BikeShop.asm"
 INCLUDE "text/CeruleanMart.asm"
 INCLUDE "text/CeruleanBadgeHouse.asm"
+INCLUDE "text/CeruleanOldRodHouse.asm"
 INCLUDE "text/LavenderPokecenter.asm"
 INCLUDE "text/PokemonTower1F.asm"
 INCLUDE "text/PokemonTower2F.asm"
@@ -214,10 +217,12 @@ INCLUDE "text/CeladonChiefHouse.asm"
 INCLUDE "text/CeladonHotel.asm"
 INCLUDE "text/FuchsiaMart.asm"
 INCLUDE "text/FuchsiaBillsGrandpasHouse.asm"
+INCLUDE "text/FuchsiaTreeDeleterHouse.asm"
 INCLUDE "text/FuchsiaPokecenter.asm"
 INCLUDE "text/WardensHouse.asm"
 INCLUDE "text/SafariZoneGate.asm"
 INCLUDE "text/FuchsiaGym.asm"
+INCLUDE "text/CeruleanRocketHouse.asm"
 
 
 SECTION "Text 9", ROMX
@@ -243,6 +248,7 @@ INCLUDE "text/SaffronMart.asm"
 INCLUDE "text/SilphCo1F.asm"
 INCLUDE "text/SaffronPokecenter.asm"
 INCLUDE "text/MrPsychicsHouse.asm"
+INCLUDE "text/FossilGuysHouse.asm"
 
 INCLUDE "data/text/text_4.asm"
 
@@ -263,6 +269,8 @@ INCLUDE "text/CinnabarIsland.asm"
 INCLUDE "text/SaffronCity.asm"
 
 INCLUDE "data/text/text_6.asm"
+
+INCLUDE "text/CinnabarLabColorChanger.asm"
 
 
 SECTION "Text 11", ROMX

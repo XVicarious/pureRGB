@@ -22,10 +22,10 @@ ENDM
 	mapconst LAVENDER_TOWN,                  9, 10 ; $04
 	mapconst VERMILION_CITY,                18, 20 ; $05
 	mapconst CELADON_CITY,                  18, 25 ; $06
-	mapconst FUCHSIA_CITY,                  18, 20 ; $07
-	mapconst CINNABAR_ISLAND,                9, 10 ; $08
-	mapconst INDIGO_PLATEAU,                 9, 10 ; $09
-	mapconst SAFFRON_CITY,                  18, 20 ; $0A
+	mapconst SAFFRON_CITY,                  18, 20 ; $07
+	mapconst FUCHSIA_CITY,                  18, 20 ; $08
+	mapconst CINNABAR_ISLAND,                9, 10 ; $09
+	mapconst INDIGO_PLATEAU,                 9, 10 ; $0A
 NUM_CITY_MAPS EQU const_value
 	mapconst UNUSED_MAP_0B,                  0,  0 ; $0B
 FIRST_ROUTE_MAP EQU const_value
@@ -123,9 +123,9 @@ FIRST_INDOOR_MAP EQU const_value
 	mapconst SS_ANNE_1F_ROOMS,               8, 12 ; $66
 	mapconst SS_ANNE_2F_ROOMS,               8, 12 ; $67
 	mapconst SS_ANNE_B1F_ROOMS,              8, 12 ; $68
-	mapconst UNUSED_MAP_69,                  0,  0 ; $69
-	mapconst UNUSED_MAP_6A,                  0,  0 ; $6A
-	mapconst UNUSED_MAP_6B,                  0,  0 ; $6B
+	mapconst CERULEAN_OLD_ROD_HOUSE,         5,  4 ; $69
+	mapconst CERULEAN_ROCKET_HOUSE_1F,       3,  3 ; $6A
+	mapconst CERULEAN_ROCKET_HOUSE_B1F,      8,  8 ; $6B
 	mapconst VICTORY_ROAD_1F,                9, 10 ; $6C
 	mapconst UNUSED_MAP_6D,                  0,  0 ; $6D
 	mapconst UNUSED_MAP_6E,                  0,  0 ; $6E
@@ -222,8 +222,8 @@ FIRST_INDOOR_MAP EQU const_value
 	mapconst ROCKET_HIDEOUT_B3F,            14, 15 ; $C9
 	mapconst ROCKET_HIDEOUT_B4F,            12, 15 ; $CA
 	mapconst ROCKET_HIDEOUT_ELEVATOR,        4,  3 ; $CB
-	mapconst UNUSED_MAP_CC,                  0,  0 ; $CC
-	mapconst UNUSED_MAP_CD,                  0,  0 ; $CD
+	mapconst FUCHSIA_TREE_DELETER_HOUSE,     4,  4 ; $CC
+	mapconst FOSSIL_GUYS_HOUSE,              4,  5 ; $CD
 	mapconst UNUSED_MAP_CE,                  0,  0 ; $CE
 	mapconst SILPH_CO_2F,                    9, 15 ; $CF
 	mapconst SILPH_CO_3F,                    9, 15 ; $D0

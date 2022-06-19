@@ -19,6 +19,7 @@ CeladonMart3F_TextPointers:
 	dw CeladonMart3Text15
 	dw CeladonMart3Text16
 	dw CeladonMart3Text17
+	dw CeladonMartTMKid
 
 CeladonMart3Text1:
 	text_asm
@@ -26,7 +27,7 @@ CeladonMart3Text1:
 	jr nz, .got_item
 	ld hl, TM18PreReceiveText
 	call PrintText
-	lb bc, TM_COUNTER, 1
+	lb bc, TM_AGILITY, 1
 	call GiveItem
 	jr nc, .bag_full
 	SetEvent EVENT_GOT_TM18
@@ -105,4 +106,20 @@ CeladonMart3Text17:
 CeladonMart3Text16:
 CeladonMart3Text15:
 	text_far _CeladonMart3Text15
+	text_end
+
+CeladonMartTMKid:
+	text_asm
+	ld hl, TMKidGreet4
+	call PrintText
+	ld hl, CeladonMartTMKidFlavor
+	call PrintText
+	jp TextScriptEnd
+	
+TMKidGreet4::
+	text_far _TMKidGreet
+	text_end
+
+CeladonMartTMKidFlavor:
+	text_far _CeladonMartTMKidFlavor
 	text_end

@@ -50,8 +50,12 @@ VermilionCityScript0:
 	ld a, $3
 	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
+	ld a, [wObtainedBadges] ; ship returns after obtaining the soul badge
+	bit 4, a
+	jr nz, .default
 	CheckEvent EVENT_SS_ANNE_LEFT
 	jr nz, .shipHasDeparted
+.default
 	ld b, S_S_TICKET
 	predef GetQuantityOfItemInBag
 	ld a, b
@@ -120,6 +124,7 @@ VermilionCity_TextPointers:
 	dw VermilionCityText4
 	dw VermilionCityText5
 	dw VermilionCityText6
+	dw VermilionCityDockBeautyText
 	dw VermilionCityText7
 	dw VermilionCityText8
 	dw MartSignText
@@ -155,8 +160,12 @@ VermilionCityTextSSAnneDeparted:
 
 VermilionCityText3:
 	text_asm
+	ld a, [wObtainedBadges]
+	bit 4, a ; after obtaining soul badge the ship returns
+	jr nz, .default
 	CheckEvent EVENT_SS_ANNE_LEFT
 	jr nz, .shipHasDeparted
+.default
 	ld a, [wSpritePlayerStateData1FacingDirection]
 	cp SPRITE_FACING_RIGHT
 	jr z, .greetPlayer
@@ -233,7 +242,22 @@ VermilionCityText14:
 	text_end
 
 VermilionCityText6:
+	text_asm
+	ld a, [wObtainedBadges]
+	bit 4, a ; after obtaining the soul badge the ship returns
+	jr z, .default
+	ld hl, VermilionCityText15
+	ret
+.default
+	ld hl, VermilionCityText6get
+	ret
+
+VermilionCityText6get:
 	text_far _VermilionCityText6
+	text_end
+
+VermilionCityText15:
+	text_far _VermilionCityText15
 	text_end
 
 VermilionCityText7:
@@ -254,4 +278,44 @@ VermilionCityText12:
 
 VermilionCityText13:
 	text_far _VermilionCityText13
+	text_end
+
+VermilionCityDockBeautyText:
+	text_asm
+	CheckEvent EVENT_GOT_DOCK_BEAUTY_ITEM
+	jr nz, .endText
+	ld hl, VermilionCityDockBeautyGreeting
+	call PrintText
+	lb bc, SURFBOARD, 1
+	call GiveItem
+	jr nc, .bagfull
+	SetEvent EVENT_GOT_DOCK_BEAUTY_ITEM
+	ld hl, VermilionCityDockBeautyReceivedItemText
+	call PrintText
+	jr .done
+.bagfull
+	ld hl, VermilionCityDockBeautyNoRoomText
+	call PrintText
+	jr .done
+.endText
+	ld hl, VermilionCityDockBeautyEndText
+	call PrintText
+.done
+	jp TextScriptEnd
+
+VermilionCityDockBeautyGreeting:
+	text_far _VermilionCityDockBeautyGreeting
+	text_end
+
+VermilionCityDockBeautyNoRoomText:
+	text_far _TM34NoRoomText
+	text_end
+
+VermilionCityDockBeautyReceivedItemText:
+	text_far _VermilionCityDockBeautyReceivedItemText
+	sound_get_key_item
+	text_end
+
+VermilionCityDockBeautyEndText:
+	text_far _VermilionCityDockBeautyEndText
 	text_end

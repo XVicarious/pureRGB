@@ -31,12 +31,12 @@ DisplayListMenuID::
 	call DisplayTextBoxID ; draw the menu text box
 	call UpdateSprites ; disable sprites behind the text box
 ; the code up to .skipMovingSprites appears to be useless
-	hlcoord 4, 2 ; coordinates of upper left corner of menu text box
-	lb de, 9, 14 ; height and width of menu text box
-	ld a, [wListMenuID]
-	and a ; PCPOKEMONLISTMENU?
-	jr nz, .skipMovingSprites
-	call UpdateSprites
+;	hlcoord 4, 2 ; coordinates of upper left corner of menu text box
+;	lb de, 9, 14 ; height and width of menu text box
+;	ld a, [wListMenuID]
+;	and a ; PCPOKEMONLISTMENU?
+;	jr nz, .skipMovingSprites
+;	call UpdateSprites
 .skipMovingSprites
 	ld a, 1 ; max menu item ID is 1 if the list has less than 2 entries
 	ld [wMenuWatchMovingOutOfBounds], a
@@ -50,10 +50,10 @@ DisplayListMenuID::
 	ld [wTopMenuItemY], a
 	ld a, 5
 	ld [wTopMenuItemX], a
-	ld a, A_BUTTON | B_BUTTON | SELECT
+	ld a, A_BUTTON | B_BUTTON | SELECT | START | D_LEFT
 	ld [wMenuWatchedKeys], a
-	ld c, 10
-	call DelayFrames
+	call CheckForTM
+	call Delay3
 
 DisplayListMenuIDLoop::
 	xor a
@@ -84,17 +84,14 @@ DisplayListMenuIDLoop::
 	push af
 	call PlaceMenuCursor
 	pop af
-	bit BIT_A_BUTTON, a
+	ld b, a
+	bit BIT_START, a
+	call nz, ButtonStartPressed
+	bit BIT_A_BUTTON, b
 	jp z, .checkOtherKeys
 .buttonAPressed
 	ld a, [wCurrentMenuItem]
 	call PlaceUnfilledArrowMenuCursor
-
-; pointless because both values are overwritten before they are read
-	ld a, $01
-	ld [wMenuExitMethod], a
-	ld [wChosenMenuItem], a
-
 	xor a
 	ld [wMenuWatchMovingOutOfBounds], a
 	ld a, [wCurrentMenuItem]
@@ -164,6 +161,7 @@ DisplayListMenuIDLoop::
 	ld [wChosenMenuItem], a
 	xor a
 	ldh [hJoy7], a ; joypad state update flag
+	ld [wTMTextShown], a
 	ld hl, wd730
 	res 6, [hl] ; turn on letter printing delay
 	jp BankswitchBack
@@ -173,6 +171,8 @@ DisplayListMenuIDLoop::
 	bit BIT_SELECT, a
 	jp nz, HandleItemListSwapping ; if so, allow the player to swap menu entries
 	ld b, a
+	bit BIT_D_LEFT, b
+	jr nz, .handleListSkip
 	bit BIT_D_DOWN, b
 	ld hl, wListScrollOffset
 	jr z, .upPressed
@@ -184,13 +184,19 @@ DisplayListMenuIDLoop::
 	cp b ; will going down scroll past the Cancel button?
 	jp c, DisplayListMenuIDLoop
 	inc [hl] ; if not, go down
+	call CheckForTM
 	jp DisplayListMenuIDLoop
 .upPressed
 	ld a, [hl]
 	and a
 	jp z, DisplayListMenuIDLoop
 	dec [hl]
+	call CheckForTM
 	jp DisplayListMenuIDLoop
+.handleListSkip
+	callfar WrapListMenu
+	jp DisplayListMenuIDLoop
+
 
 DisplayChooseQuantityMenu::
 ; text box dimensions/coordinates for just quantity
@@ -228,6 +234,10 @@ DisplayChooseQuantityMenu::
 	jr nz, .incrementQuantity
 	bit BIT_D_DOWN, a
 	jr nz, .decrementQuantity
+	bit BIT_D_RIGHT, a
+	jr nz, .incrementQuantity10
+	bit BIT_D_LEFT, a
+	jr nz, .decrementQuantity10
 	jr .waitForKeyPressLoop
 .incrementQuantity
 	ld a, [wMaxItemQuantity]
@@ -246,6 +256,33 @@ DisplayChooseQuantityMenu::
 	ld hl, wItemQuantity ; current quantity
 	dec [hl]
 	jr nz, .handleNewQuantity
+; wrap to the max quantity if the player goes below 1
+	ld a, [wMaxItemQuantity]
+	ld [hl], a
+	jr .handleNewQuantity
+.incrementQuantity10
+	ld a, [wMaxItemQuantity]
+	inc a
+	ld b, a
+	ld hl, wItemQuantity ; current quantity
+	ld a, [hl]
+	add 10
+	ld [hl], a
+	cp b
+	jr c, .handleNewQuantity
+; wrap to 1 if the player goes above the max quantity
+	ld a, 1
+	ld [hl], a
+	jr .handleNewQuantity
+.decrementQuantity10
+	ld hl, wItemQuantity ; current quantity
+	ld a, [hl]
+	cp 11
+	jr c, .wrapMax
+	sub 10
+	ld [hl], a
+	jr .handleNewQuantity
+.wrapMax
 ; wrap to the max quantity if the player goes below 1
 	ld a, [wMaxItemQuantity]
 	ld [hl], a
@@ -324,6 +361,7 @@ ExitListMenu::
 	ld [wMenuExitMethod], a
 	ld [wMenuWatchMovingOutOfBounds], a
 	xor a
+	ld [wTMTextShown], a
 	ldh [hJoy7], a
 	ld hl, wd730
 	res 6, [hl]
@@ -521,6 +559,7 @@ PrintListMenuEntries::
 .printCancelMenuItem
 	ld de, ListMenuCancelText
 	jp PlaceString
+
 
 ListMenuCancelText::
 	db "CANCEL@"

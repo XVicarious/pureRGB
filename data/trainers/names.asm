@@ -46,3 +46,8 @@ TrainerNames::
 	db "CHANNELER@"
 	db "AGATHA@"
 	db "LANCE@"
+	db "COOL KID@"
+	db "FIREFIGHTER@"
+	db "RANGER@"
+	db "RANGER@"
+	db "ROOKIE@"

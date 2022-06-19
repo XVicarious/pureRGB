@@ -146,10 +146,10 @@ AIMoveChoiceModification1:
 	jr .nextMove
 
 StatusAilmentMoveEffects:
-	db EFFECT_01 ; unused sleep effect
 	db SLEEP_EFFECT
 	db POISON_EFFECT
 	db PARALYZE_EFFECT
+	db BURN_EFFECT
 	db -1 ; end
 
 ; slightly encourage moves with specific effects.
@@ -174,8 +174,6 @@ AIMoveChoiceModification2:
 	ld a, [wEnemyMoveEffect]
 	cp ATTACK_UP1_EFFECT
 	jr c, .nextMove
-	cp BIDE_EFFECT
-	jr c, .preferMove
 	cp ATTACK_UP2_EFFECT
 	jr c, .nextMove
 	cp POISON_EFFECT
@@ -345,7 +343,7 @@ CooltrainerFAI:
 	; The intended 25% chance to consider switching will not apply.
 	; Uncomment the line below to fix this.
 	cp 25 percent + 1
-	; ret nc
+	ret nc
 	ld a, 10
 	call AICheckIfHPBelowFraction
 	jp c, AIUseHyperPotion
@@ -635,12 +633,12 @@ AICureStatus:
 	res 0, [hl]
 	ret
 
-AIUseXAccuracy: ; unused
-	call AIPlayRestoringSFX
-	ld hl, wEnemyBattleStatus2
-	set 0, [hl]
-	ld a, X_ACCURACY
-	jp AIPrintItemUse
+;AIUseXAccuracy: ; unused
+;	call AIPlayRestoringSFX
+;	ld hl, wEnemyBattleStatus2
+;	set 0, [hl]
+;	ld a, X_ACCURACY
+;	jp AIPrintItemUse
 
 AIUseGuardSpec:
 	call AIPlayRestoringSFX
@@ -649,12 +647,25 @@ AIUseGuardSpec:
 	ld a, GUARD_SPEC
 	jp AIPrintItemUse
 
-AIUseDireHit: ; unused
-	call AIPlayRestoringSFX
-	ld hl, wEnemyBattleStatus2
-	set 2, [hl]
-	ld a, DIRE_HIT
-	jp AIPrintItemUse
+;AIUseDireHit: ; unused
+;	call AIPlayRestoringSFX
+;	ld hl, wEnemyBattleStatus2
+;	set 2, [hl]
+;	ld a, DIRE_HIT
+;	jp AIPrintItemUse
+
+; if enemy HP is below a 1/[wUnusedC000], store 1 in wUnusedC000.
+AICheckIfHPBelowFractionStore::
+	ld a, [wUnusedC000]
+	call AICheckIfHPBelowFraction
+	jr c, .below
+	xor a
+	jr .done
+.below
+	ld a, 1
+.done
+	ld [wUnusedC000], a 
+	ret
 
 AICheckIfHPBelowFraction:
 ; return carry if enemy trainer's current HP is below 1 / a of the maximum

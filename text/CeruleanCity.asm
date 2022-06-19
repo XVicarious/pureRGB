@@ -233,3 +233,91 @@ _CeruleanCityText17::
 	para "The Tomboyish"
 	line "Mermaid!"
 	done
+
+_OakBattleStartText::
+	text "Hello, <PLAYER>!"
+
+	para "How is your"
+	line "POKéDEX coming"
+	cont "along?"
+
+	para "What am I doing"
+	line "here?"
+
+	para "Training, of"
+	line "course!"
+
+	para "I've come here"
+	line "once a week to"
+	cont "train since I was"
+	cont "your age!"
+
+	para "About that third"
+	line "starter #MON:"
+
+	para "I've been raising"
+	line "it since you and"
+	cont "<RIVAL> left."
+
+	para "It's grown into"
+	line "quite a wonderful"
+	cont "battler!"
+
+	para "I'll show you"
+	line "how we battled"
+	cont "#MON back in"
+	cont "my day!"
+	done
+
+_OakBattleWinText::
+	text "R-"
+	line "Remarkable!"
+	prompt
+
+_OakBattleLoseText::
+	text "Looks"
+	line "like I've still"
+	cont "got it!"
+	prompt
+
+_OakBeatenText::
+	text "A trainer's job"
+	line "is never truly"
+	cont "done!"
+
+	para "Both you and your"
+	line "#MON should"
+	cont "always keep"
+	cont "aiming to"
+	cont "improve!"
+
+	para "Come train with"
+	line "me sometime."
+
+	para "I've got some"
+	line "great stories to"
+	cont "tell!"
+	done
+
+_OakFirstLoseText::
+	text "Great battle!"
+	para "As expected of"
+	line "the CHAMPION!"
+	para "I feel like I"
+	line "should reward"
+	cont "you somehow."
+	para "Ah, how about"
+	line "this?"
+	para "Take this note"
+	line "to the lab at"
+	cont "CINNABAR ISLAND."
+	para "My colleague"
+	line "works there!"
+	para "He'll know what"
+	line "to do!"
+	para "..."
+	para "..."
+	para "..."
+	para "PROF.OAK wrote"
+	line "a note for you!@"
+	text_end

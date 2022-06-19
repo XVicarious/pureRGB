@@ -41,7 +41,7 @@ EnterMap::
 OverworldLoop::
 	call DelayFrame
 OverworldLoopLessDelay::
-	call DelayFrame
+	;call DelayFrame ;60fps mode
 	call LoadGBPal
 	ld a, [wd736]
 	bit 6, a ; jumping down a ledge?
@@ -80,13 +80,23 @@ OverworldLoopLessDelay::
 	jp .displayDialogue
 .startButtonNotPressed
 	bit BIT_A_BUTTON, a
+	jr nz, .aorSelectPressed
+	bit BIT_SELECT, a
 	jp z, .checkIfDownButtonIsPressed
+.aorSelectPressed	
 ; if A is pressed
 	ld a, [wd730]
 	bit 2, a
 	jp nz, .noDirectionButtonsPressed
 	call IsPlayerCharacterBeingControlledByGame
 	jr nz, .checkForOpponent
+.trySelectingBikeRod
+	ld a, [hJoyPressed]
+	bit BIT_SELECT, a	;is Select being pressed?
+	jr z, .notSelect
+	callfar CheckForRodBike
+	jp OverworldLoop
+.notSelect
 	call CheckForHiddenObjectOrBookshelfOrCardKeyDoor
 	ldh a, [hItemAlreadyFound]
 	and a
@@ -114,14 +124,14 @@ OverworldLoopLessDelay::
 	ld [wEnteringCableClub], a
 	jr z, .changeMap
 ; XXX can this code be reached?
-	predef LoadSAV
-	ld a, [wCurMap]
-	ld [wDestinationMap], a
-	call SpecialWarpIn
-	ld a, [wCurMap]
-	call SwitchToMapRomBank ; switch to the ROM bank of the current map
-	ld hl, wCurMapTileset
-	set 7, [hl]
+;	predef LoadSAV
+;	ld a, [wCurMap]
+;	ld [wDestinationMap], a
+;	call SpecialWarpIn
+;	ld a, [wCurMap]
+;	call SwitchToMapRomBank ; switch to the ROM bank of the current map
+;	ld hl, wCurMapTileset
+;	set 7, [hl]
 .changeMap
 	jp EnterMap
 .checkForOpponent
@@ -133,8 +143,22 @@ OverworldLoopLessDelay::
 	ld hl, wFlags_0xcd60
 	res 2, [hl]
 	call UpdateSprites
-	ld a, 1
-	ld [wCheckFor180DegreeTurn], a
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; - NEW : code for changing direction without moving by pressing A+B and a direction when standing still.
+	ld a, [hJoyHeld] 
+	and B_BUTTON
+	jr z, .resetDirectionChangeState
+	ld a, [hJoyHeld] 
+	and A_BUTTON
+	jr z, .resetDirectionChangeState ; hold both B and A button to go into "change direction without moving" mode.
+	ld a, [wDirectionChangeModeCounter]
+	inc a
+	ld [wDirectionChangeModeCounter], a
+	jr .noDirectionButtonsPressed2
+.resetDirectionChangeState
+	xor a
+	ld [wDirectionChangeModeCounter], a
+.noDirectionButtonsPressed2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ld a, [wPlayerMovingDirection] ; the direction that was pressed last time
 	and a
 	jp z, OverworldLoop
@@ -181,14 +205,20 @@ OverworldLoopLessDelay::
 	ld a, [wd730]
 	bit 7, a ; are we simulating button presses?
 	jr nz, .noDirectionChange ; ignore direction changes if we are
-	ld a, [wCheckFor180DegreeTurn]
-	and a
-	jr z, .noDirectionChange
-	ld a, [wPlayerDirection] ; new direction
-	ld b, a
-	ld a, [wPlayerLastStopDirection] ; old direction
-	cp b
-	jr z, .noDirectionChange
+;;;;;; - NEW: Code for entering "direction change" mode when wDirectionChangeModeCounter >= 10
+	ld a, [wDirectionChangeModeCounter]
+	cp 10 ; must hold down A+B for at least this many frames while standing still to get into this mode
+	jr c, .noDirectionChange
+;;;;;;
+	 ;
+;	ld a, [wDirectionChangeModeCounter]
+;	and a
+;	jr z, .noDirectionChange
+;	ld a, [wPlayerDirection] ; new direction
+;	ld b, a
+;	ld a, [wPlayerLastStopDirection] ; old direction
+;	cp b
+;	jr z, .noDirectionChange
 ; Check whether the player did a 180-degree turn.
 ; It appears that this code was supposed to show the player rotate by having
 ; the player's sprite face an intermediate direction before facing the opposite
@@ -197,36 +227,33 @@ OverworldLoopLessDelay::
 ; ever be visible because DelayFrame is called at the start of OverworldLoop and
 ; normally not enough cycles would be executed between then and the time the
 ; direction is set for V-blank to occur while the direction is still set.
-	swap a ; put old direction in upper half
-	or b ; put new direction in lower half
-	cp (PLAYER_DIR_DOWN << 4) | PLAYER_DIR_UP ; change dir from down to up
-	jr nz, .notDownToUp
-	ld a, PLAYER_DIR_LEFT
-	ld [wPlayerMovingDirection], a
-	jr .holdIntermediateDirectionLoop
-.notDownToUp
-	cp (PLAYER_DIR_UP << 4) | PLAYER_DIR_DOWN ; change dir from up to down
-	jr nz, .notUpToDown
-	ld a, PLAYER_DIR_RIGHT
-	ld [wPlayerMovingDirection], a
-	jr .holdIntermediateDirectionLoop
-.notUpToDown
-	cp (PLAYER_DIR_RIGHT << 4) | PLAYER_DIR_LEFT ; change dir from right to left
-	jr nz, .notRightToLeft
-	ld a, PLAYER_DIR_DOWN
-	ld [wPlayerMovingDirection], a
-	jr .holdIntermediateDirectionLoop
-.notRightToLeft
-	cp (PLAYER_DIR_LEFT << 4) | PLAYER_DIR_RIGHT ; change dir from left to right
-	jr nz, .holdIntermediateDirectionLoop
-	ld a, PLAYER_DIR_UP
-	ld [wPlayerMovingDirection], a
-.holdIntermediateDirectionLoop
+;	swap a ; put old direction in upper half
+;	or b ; put new direction in lower half
+;	cp (PLAYER_DIR_DOWN << 4) | PLAYER_DIR_UP ; change dir from down to up
+;	jr nz, .notDownToUp
+;	ld a, PLAYER_DIR_LEFT
+;	ld [wPlayerMovingDirection], a
+;	jr .holdIntermediateDirectionLoop
+;.notDownToUp
+;	cp (PLAYER_DIR_UP << 4) | PLAYER_DIR_DOWN ; change dir from up to down
+;	jr nz, .notUpToDown
+;	ld a, PLAYER_DIR_RIGHT
+;	ld [wPlayerMovingDirection], a
+;	jr .holdIntermediateDirectionLoop
+;.notUpToDown
+;	cp (PLAYER_DIR_RIGHT << 4) | PLAYER_DIR_LEFT ; change dir from right to left
+;	jr nz, .notRightToLeft
+;	ld a, PLAYER_DIR_DOWN
+;	ld [wPlayerMovingDirection], a
+;	jr .holdIntermediateDirectionLoop
+;.notRightToLeft
+;	cp (PLAYER_DIR_LEFT << 4) | PLAYER_DIR_RIGHT ; change dir from left to right
+;	jr nz, .holdIntermediateDirectionLoop
+;	ld a, PLAYER_DIR_UP
+;	ld [wPlayerMovingDirection], a
+.directionChangeState
 	ld hl, wFlags_0xcd60
 	set 2, [hl]
-	ld hl, wCheckFor180DegreeTurn
-	dec [hl]
-	jr nz, .holdIntermediateDirectionLoop
 	ld a, [wPlayerDirection]
 	ld [wPlayerMovingDirection], a
 	call NewBattle
@@ -234,6 +261,8 @@ OverworldLoopLessDelay::
 	jp OverworldLoop
 
 .noDirectionChange
+	xor a
+	ld [wDirectionChangeModeCounter], a
 	ld a, [wPlayerDirection] ; current direction
 	ld [wPlayerMovingDirection], a ; save direction
 	call UpdateSprites
@@ -261,7 +290,7 @@ OverworldLoopLessDelay::
 	jp c, OverworldLoop
 
 .noCollision
-	ld a, $08
+	ld a, $10
 	ld [wWalkCounter], a
 	jr .moveAhead2
 
@@ -276,14 +305,32 @@ OverworldLoopLessDelay::
 .moveAhead2
 	ld hl, wFlags_0xcd60
 	res 2, [hl]
+	ld a, [wd736]
+	bit 7, a ; spinning?
+	jr nz, .doBikeSpeed ; FIXED: faster spinning movement
 	ld a, [wWalkBikeSurfState]
 	dec a ; riding a bike?
 	jr nz, .normalPlayerSpriteAdvancement
 	ld a, [wd736]
 	bit 6, a ; jumping a ledge?
 	jr nz, .normalPlayerSpriteAdvancement
+	; Bike is normally 2x walking speed
+	; Holding B makes the bike even faster
+	ld a, [hJoyHeld]
+	and B_BUTTON
+	jr z, .doBikeSpeed
 	call DoBikeSpeedup
+	call DoBikeSpeedup
+.doBikeSpeed
+	call DoBikeSpeedup
+	jr .notRunning
 .normalPlayerSpriteAdvancement
+	; Holding B makes you run at 2x walking speed
+	ld a, [hJoyHeld]
+	and B_BUTTON
+	jr z, .notRunning
+	call DoBikeSpeedup
+.notRunning
 	call AdvancePlayerSprite
 	ld a, [wWalkCounter]
 	and a
@@ -673,6 +720,8 @@ CheckMapConnections::
 	ld a, h
 	ld [wCurrentTileBlockMapViewPointer + 1], a
 .loadNewMap ; load the connected map that was entered
+	ld hl, wCurrentMapScriptFlags
+	set 4, [hl]
 	call LoadMapHeader
 	call PlayDefaultMusicFadeOutCurrent
 	ld b, SET_PAL_OVERWORLD
@@ -701,6 +750,17 @@ PlayMapChangeSound::
 	and a
 	ret nz
 	jp GBFadeOutToBlack
+
+CheckIfInFlyMap::
+	call CheckIfInOutsideMap
+	ret z
+	cp FOREST ; FIXED: can fly in safari zone and viridian forest
+	ret z
+	ld a, [wCurMap]
+	cp CELADON_MART_ROOF ; FIXED: can fly on roofs
+	ret z
+	cp CELADON_MANSION_ROOF ; FIXED: can fly on roofs
+	ret
 
 CheckIfInOutsideMap::
 ; If the player is in an outside map (a town or route), set the z flag
@@ -1455,7 +1515,10 @@ AdvancePlayerSprite::
 	ld [wXCoord], a
 .afterUpdateMapCoords
 	ld a, [wWalkCounter] ; walking animation counter
-	cp $07
+	push bc
+	ld b, $0F
+	cp b
+	pop bc
 	jp nz, .scrollBackgroundAndSprites
 ; if this is the first iteration of the animation
 	ld a, c
@@ -1515,10 +1578,6 @@ AdvancePlayerSprite::
 	or $98
 	ld [wMapViewVRAMPointer + 1], a
 .adjustXCoordWithinBlock
-	ld a, c
-	and a
-	jr z, .pointlessJump ; mistake?
-.pointlessJump
 	ld hl, wXBlockCoord
 	ld a, [hl]
 	add c
@@ -1602,8 +1661,8 @@ AdvancePlayerSprite::
 	ld b, a
 	ld a, [wSpritePlayerStateData1XStepVector]
 	ld c, a
-	sla b
-	sla c
+	;sla b ; 60FPS mode doesn't need this
+	;sla c
 	ldh a, [hSCY]
 	add b
 	ldh [hSCY], a ; update background scroll Y
@@ -2011,7 +2070,7 @@ LoadPlayerSpriteGraphicsCommon::
 LoadMapHeader::
 	farcall MarkTownVisitedAndLoadMissableObjects
 	ld a, [wCurMapTileset]
-	ld [wUnusedD119], a
+	;ld [wUnusedD119], a
 	ld a, [wCurMap]
 	call SwitchToMapRomBank
 	ld a, [wCurMapTileset]
@@ -2172,7 +2231,8 @@ LoadMapHeader::
 	ld b, a
 	ld c, $00
 .loadSpriteLoop
-	ld a, [hli]
+	call MapSpritePictureIDs
+	inc hl
 	ld [de], a ; x#SPRITESTATEDATA1_PICTUREID
 	inc d
 	ld a, $04
@@ -2285,6 +2345,32 @@ LoadMapHeader::
 	ld [MBC1RomBank], a
 	ret
 
+MapSpritePictureIDs::
+	ld a, [wSpriteOptions2]
+	bit BIT_MENU_ICON_SPRITES, a
+	jr z, .mapSpriteCheck
+	jr .noSpriteAdd
+.mapSpriteCheck
+	push de
+	ld de, AltSpriteMappingTable
+.loop ; find the alt sprite mapping in the array
+	ld a, [de]
+	inc de
+	inc de
+	cp $ff
+	jr z, .mapSpriteDone
+	cp [hl]
+	jr nz, .loop
+	dec de
+	ld a, [de] ; replacement sprite from matching array entry
+	pop de
+	ret
+.mapSpriteDone
+	pop de
+.noSpriteAdd
+	ld a, [hl]
+	ret
+
 ; function to copy map connection data from ROM to WRAM
 ; Input: hl = source, de = destination
 CopyMapConnectionHeader::
@@ -2309,7 +2395,7 @@ LoadMapData::
 	ldh [hSCY], a
 	ldh [hSCX], a
 	ld [wWalkCounter], a
-	ld [wUnusedD119], a
+	;ld [wUnusedD119], a
 	ld [wWalkBikeSurfStateCopy], a
 	ld [wSpriteSetID], a
 	call LoadTextBoxTilePatterns
@@ -2452,4 +2538,18 @@ LoadDestinationWarpPosition::
 	pop af
 	ldh [hLoadedROMBank], a
 	ld [MBC1RomBank], a
+	ret
+
+INCLUDE "data/sprites/alt_sprite_mappings.asm"
+
+SetLastBlackoutMap::
+	; called when entering pokemon centers
+	ld a, [wLastMap]
+	ld [wLastBlackoutMap], a
+	ret
+
+SetCurBlackoutMap::
+	; called after using FLY
+	ld a, [wCurMap]
+	ld [wLastBlackoutMap], a
 	ret

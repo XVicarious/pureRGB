@@ -30,10 +30,16 @@ SetPal_Battle:
 	ld de, wPalPacket
 	ld bc, $10
 	call CopyData
+	ld a, [wBattleMonFlags]
+	and 1 ; only the 1st bit of the flags determines alt palette
+	ld [wIsAltPalettePkmn], a
 	ld a, [wPlayerBattleStatus3]
 	ld hl, wBattleMonSpecies
 	call DeterminePaletteID
 	ld b, a
+	ld a, [wEnemyMonFlags]
+	and 1 ; only the 1st bit of the flags determines alt palette
+	ld [wIsAltPalettePkmn], a
 	ld a, [wEnemyBattleStatus3]
 	ld hl, wEnemyMonSpecies2
 	call DeterminePaletteID
@@ -73,7 +79,15 @@ SetPal_StatusScreen:
 	cp NUM_POKEMON_INDEXES + 1
 	jr c, .pokemon
 	ld a, $1 ; not pokemon
+	jr .notPokemon
 .pokemon
+	push af
+	;if it's a pokemon we may have to load the alt color palette based on the pokemon data
+	ld a, [wLoadedMonFlags]
+	and 1 ; only the 1st bit of the flags determines alt palette, zero the other ones
+	ld [wIsAltPalettePkmn], a
+	pop af
+.notPokemon
 	call DeterminePaletteIDOutOfBattle
 	push af
 	ld hl, wPalPacket + 1
@@ -98,8 +112,38 @@ SetPal_Pokedex:
 	ld bc, $10
 	call CopyData
 	ld a, [wcf91]
+	; no alt palette colors when viewing pokedex entries
 	call DeterminePaletteIDOutOfBattle
 	ld hl, wPalPacket + 3
+	ld [hl], a
+	ld hl, wPalPacket
+	ld de, BlkPacket_Pokedex
+	ret
+
+SetPal_ColorBeforeAfter:
+	ld hl, PalPacket_Empty
+	ld de, wPalPacket
+	ld bc, $10
+	call CopyData
+	; before picture
+	ld a, [wLoadedMonFlags]
+	and 1 ; only the 1st bit of the flags determines alt palette, zero the other ones
+	ld c, a
+	ld [wIsAltPalettePkmn], a
+	ld a, [wcf91]
+	call DeterminePaletteIDOutOfBattle
+	ld b, a
+	; after picture
+	ld a, c
+	xor 1 ; second palette should always be alternate one
+	ld [wIsAltPalettePkmn], a
+	ld a, [wcf91]
+	call DeterminePaletteIDOutOfBattle
+	ld c, a
+	ld hl, wPalPacket + 1
+	ld [hl], a
+	ld hl, wPalPacket + 3
+	ld a, b
 	ld [hl], a
 	ld hl, wPalPacket
 	ld de, BlkPacket_Pokedex
@@ -147,6 +191,8 @@ SetPal_Overworld:
 	ld a, [wCurMap]
 	cp FIRST_INDOOR_MAP
 	jr c, .townOrRoute
+	cp CERULEAN_ROCKET_HOUSE_B1F
+	jr z, .rocketHouseBasement
 	cp CERULEAN_CAVE_2F
 	jr c, .normalDungeonOrBuilding
 	cp CERULEAN_CAVE_1F + 1
@@ -169,6 +215,9 @@ SetPal_Overworld:
 	ld a, SET_PAL_OVERWORLD
 	ld [wDefaultPaletteCommand], a
 	ret
+.rocketHouseBasement
+	ld a, PAL_REDMON - 1
+	jr .town
 .PokemonTowerOrAgatha
 	ld a, PAL_GREYMON - 1
 	jr .town
@@ -182,6 +231,10 @@ SetPal_Overworld:
 ; used when a Pokemon is the only thing on the screen
 ; such as evolution, trading and the Hall of Fame
 SetPal_PokemonWholeScreen:
+	ld a, [wLoadedMonFlags]
+	and 1 ; only the 1st bit of the flags determines alt palette, zero the other ones
+	ld [wIsAltPalettePkmn], a
+SetPal_PokemonWholeScreenTrade:
 	push bc
 	ld hl, PalPacket_Empty
 	ld de, wPalPacket
@@ -254,8 +307,10 @@ SetPalFunctions:
 	dw SetPal_Overworld
 	dw SetPal_PartyMenu
 	dw SetPal_PokemonWholeScreen
+	dw SetPal_PokemonWholeScreenTrade
 	dw SetPal_GameFreakIntro
 	dw SetPal_TrainerCard
+	dw SetPal_ColorBeforeAfter
 
 ; The length of the blk data of each badge on the Trainer Card.
 ; The Rainbow Badge has 3 entries because of its many colors.
@@ -285,8 +340,17 @@ DeterminePaletteIDOutOfBattle:
 .skipDexNumConversion
 	ld e, a
 	ld d, 0
+	ld a, [wIsAltPalettePkmn]
+	and a
+	jr z, .defaultPalette
+	ld hl, AltMonsterPalettes ; not just for Pokemon, Trainers use it too
+	jr .usePalette
+.defaultPalette
 	ld hl, MonsterPalettes ; not just for Pokemon, Trainers use it too
+.usePalette
 	add hl, de
+	xor a
+	ld [wIsAltPalettePkmn], a ; always reset this value after displaying a pokemon sprite
 	ld a, [hl]
 	ret
 
@@ -635,6 +699,7 @@ CopySGBBorderTiles:
 INCLUDE "data/sgb/sgb_packets.asm"
 
 INCLUDE "data/pokemon/palettes.asm"
+INCLUDE "data/pokemon/alt_palettes.asm"
 
 INCLUDE "data/sgb/sgb_palettes.asm"
 

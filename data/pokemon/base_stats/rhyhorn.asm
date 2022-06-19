@@ -11,14 +11,38 @@
 	dw RhyhornPicFront, RhyhornPicBackSW
 
 	db HORN_ATTACK, NO_MOVE, NO_MOVE, NO_MOVE ; level 1 learnset
-	db GROWTH_SLOW ; growth rate
+	db GROWTH_MEDIUM_SLOW ; growth rate
 
 	; tm/hm learnset
-	tmhm TOXIC,        HORN_DRILL,   BODY_SLAM,    TAKE_DOWN,    DOUBLE_EDGE,  \
-	     RAGE,         THUNDERBOLT,  THUNDER,      EARTHQUAKE,   FISSURE,      \
-	     DIG,          MIMIC,        DOUBLE_TEAM,  BIDE,         FIRE_BLAST,   \
-	     SKULL_BASH,   REST,         ROCK_SLIDE,   SUBSTITUTE,   STRENGTH
+	tmhm \
+	PIN_MISSILE,\
+	TOXIC,\
+	HORN_DRILL,\
+	BODY_SLAM,\
+	SLASH,\
+	DOUBLE_EDGE,\
+	ROLLING_KICK,\
+	BARRIER,\
+	DRAGON_RAGE,\
+	THUNDERBOLT,\
+	THUNDER,\
+	EARTHQUAKE,\
+	CRABHAMMER,\
+	DIG,\
+	KINESIS,\
+	SWORDS_DANCE,\
+	BIDE,\
+	BARRAGE,\
+	FIRE_BLAST,\
+	FLAMETHROWER,\
+	SLAM,\
+	ROCK_SLIDE,\
+	GLARE,\
+	SUBSTITUTE,\
+	CUT,\
+	STRENGTH
 	; end
+
 
 	dw BANK(RhyhornPicFront), BANK(RhyhornPicBack)
 

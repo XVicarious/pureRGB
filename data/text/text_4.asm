@@ -20,6 +20,10 @@ _PlayerBlackedOutText::
 _RepelWoreOffText::
 	text "REPEL's effect"
 	line "wore off."
+	prompt
+
+_RepelUseAnotherText::
+	text "Use another?"
 	done
 
 _PokemartBuyingGreetingText::
@@ -92,7 +96,7 @@ _LearnedMove1Text::
 _WhichMoveToForgetText::
 	text "Which move should"
 	next "be forgotten?"
-	done
+	prompt
 
 _AbandonLearningText::
 	text "Abandon learning"
@@ -130,6 +134,11 @@ _TryingToLearnText::
 	text_ram wStringBuffer
 	text "?"
 	done
+
+_PressStartToLearnText::
+	text "Press START to"
+	line "select a move.@"
+	text_end
 
 _OneTwoAndText::
 	text "1, 2 and...@"
@@ -173,6 +182,11 @@ _ShallWeHealYourPokemonText::
 _NeedYourPokemonText::
 	text "OK. We'll need"
 	line "your #MON."
+	done
+
+_PokemonCenterFastWelcomeText::
+	text "We'll heal your"
+	line "#MON quick."
 	done
 
 _PokemonFightingFitText::

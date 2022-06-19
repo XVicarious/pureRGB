@@ -48,6 +48,13 @@ _ItemUseBallText08::
 	cont "someone's PC!"
 	prompt
 
+_NoBoxSlotsLeftText::
+	text "Your BOX is now"
+	line "full."
+	para "Time to change"
+	line "boxes!"
+	prompt
+
 _ItemUseBallText06::
 	text "New #DEX data"
 	line "will be added for"
@@ -68,6 +75,54 @@ _SurfingNoPlaceToGetOffText::
 	line "to get off!"
 	prompt
 
+_ApexChipPutOnPokeballText::
+	text "You installed the"
+	line "APEX CHIP on"
+	para "@"
+	text_ram wcd6d
+	text "'s"
+	line "Poké Ball.@"
+	text_asm
+	ld a, SFX_SWITCH
+	call PlaySound
+	call WaitForSoundToFinish
+	ld c, 50
+	call DelayFrames
+	ld a, SFX_TRADE_MACHINE
+	call PlaySound
+	call WaitForSoundToFinish
+	ld c, 50
+	call DelayFrames
+	jp TextScriptEnd
+
+_ApexChipDVsMaxedText::
+	text_ram wcd6d
+	text "'s"
+	line "potential is"
+	cont "maximized!"
+	para "DVs are at max!"
+	prompt
+
+_ApexChipAlreadyUsedText::
+	text "There's already"
+	line "an APEX CHIP"
+	para "installed on"
+	line "@"
+	text_ram wcd6d
+	text "'s"
+	cont "Poké Ball."
+	prompt
+
+_BoosterChipInstalledText::
+	text "You plugged the"
+	line "BOOSTER CHIP into"
+	cont "your POKéBALL"
+	cont "belt."
+
+	para "All #MON will"
+	line "gain boosted EXP!@"
+	text_end
+
 _VitaminStatRoseText::
 	text_ram wcd6d
 	text "'s"
@@ -77,6 +132,12 @@ _VitaminStatRoseText::
 	prompt
 
 _VitaminNoEffectText::
+	text "Vitamins can't"
+	line "raise this stat"
+	cont "further."
+	prompt
+
+_RareCandyNoEffectText::
 	text "It won't have any"
 	line "effect."
 	prompt

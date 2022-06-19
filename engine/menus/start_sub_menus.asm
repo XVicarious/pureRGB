@@ -132,7 +132,7 @@ StartMenu_Pokemon::
 .fly
 	bit BIT_THUNDERBADGE, a
 	jp z, .newBadgeRequired
-	call CheckIfInOutsideMap
+	call CheckIfInFlyMap
 	jr z, .canFly
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
@@ -144,11 +144,14 @@ StartMenu_Pokemon::
 	call ChooseFlyDestination
 	ld a, [wd732]
 	bit 3, a ; did the player decide to fly?
-	jp nz, .goBackToMap
+	jr nz, .doFly
 	call LoadFontTilePatterns
 	ld hl, wd72e
 	set 1, [hl]
 	jp StartMenu_Pokemon
+.doFly
+	callfar ClearSafariFlags
+	jp .goBackToMap
 .cut
 	bit BIT_CASCADEBADGE, a
 	jp z, .newBadgeRequired
@@ -203,14 +206,14 @@ StartMenu_Pokemon::
 	call GBPalWhiteOutWithDelay3
 	jp .goBackToMap
 .teleport
-	call CheckIfInOutsideMap
-	jr z, .canTeleport
-	ld a, [wWhichPokemon]
-	ld hl, wPartyMonNicks
-	call GetPartyMonName
-	ld hl, .cannotUseTeleportNowText
-	call PrintText
-	jp .loop
+	;call CheckIfInOutsideMap
+	jr .canTeleport
+	; ld a, [wWhichPokemon]
+	;ld hl, wPartyMonNicks
+	;call GetPartyMonName
+	;ld hl, .cannotUseTeleportNowText
+	;call PrintText
+	;jp .loop
 .canTeleport
 	ld hl, .warpToLastPokemonCenterText
 	call PrintText
@@ -223,6 +226,7 @@ StartMenu_Pokemon::
 	ld c, 60
 	call DelayFrames
 	call GBPalWhiteOutWithDelay3
+	callfar ClearSafariFlags
 	jp .goBackToMap
 .warpToLastPokemonCenterText
 	text_far _WarpToLastPokemonCenterText
@@ -300,6 +304,8 @@ ItemMenuLoop:
 	call RunDefaultPaletteCommand
 
 StartMenu_Item::
+	ld a, 1
+	ld [wListWithTMText], a ; we want TM names to get printed here
 	ld a, [wLinkState]
 	dec a ; is the player in the Colosseum or Trade Centre?
 	jr nz, .notInCableClubRoom
@@ -316,19 +322,28 @@ StartMenu_Item::
 	ld [wPrintItemPrices], a
 	ld a, ITEMLISTMENU
 	ld [wListMenuID], a
-	ld a, [wBagSavedMenuItem]
-	ld [wCurrentMenuItem], a
+	call CheckLoadSavedIndex
 	call DisplayListMenuID
 	ld a, [wCurrentMenuItem]
 	ld [wBagSavedMenuItem], a
 	jr nc, .choseItem
 .exitMenu
+	xor a
+	ld [wListWithTMText], a ; finished scrolling through a list
 	call LoadScreenTilesFromBuffer2 ; restore saved screen
 	call LoadTextBoxTilePatterns
 	call UpdateSprites
 	jp RedisplayStartMenu
 .choseItem
-; erase menu cursor (blank each tile in front of an item name)
+	ld a, [wUnusedC000]
+	cp 1
+	jr nz, .noStartButton
+	callfar DepositItemFromItemMenu
+	ld a, 0
+	ld [wUnusedC000], a
+	jp ItemMenuLoop
+.noStartButton
+; erase menu cursor (blank each tile in front of an item name) 
 	ld a, " "
 	ldcoord_a 5, 4
 	ldcoord_a 5, 6
@@ -339,6 +354,8 @@ StartMenu_Item::
 	ld [wMenuItemToSwap], a
 	ld a, [wcf91]
 	cp BICYCLE
+	jp z, .useOrTossItem
+	cp POCKET_ABRA
 	jp z, .useOrTossItem
 .notBicycle1
 	ld a, USE_TOSS_MENU_TEMPLATE
@@ -370,7 +387,13 @@ StartMenu_Item::
 	call CopyToStringBuffer
 	ld a, [wcf91]
 	cp BICYCLE
-	jr nz, .notBicycle2
+	jr z, .yesBicycle
+	cp POCKET_ABRA
+	jr z, .pocketAbra
+	jr .notBicycle2
+.pocketAbra
+	jr .useItem_closeMenu
+.yesBicycle
 	ld a, [wd732]
 	bit 5, a
 	jr z, .useItem_closeMenu
@@ -404,6 +427,8 @@ StartMenu_Item::
 	ld a, [wActionResultOrTookBattleTurn]
 	and a
 	jp z, ItemMenuLoop
+	xor a
+	ld [wListWithTMText], a ; finished using list
 	jp CloseStartMenu
 .useItem_partyMenu
 	ld a, [wUpdateSpritesEnabled]
@@ -658,12 +683,52 @@ StartMenu_Option::
 	jp RedisplayStartMenu
 
 SwitchPartyMon::
+	;make sure the animation is reset.
+	push bc
+	callfar ResetPartyAnimation
+	pop bc
+	; then swap
 	call SwitchPartyMon_InitVarOrSwapData ; swap data
-	ld a, [wSwappedMenuItem]
+	ld a, [wWhichTrade]
 	call SwitchPartyMon_ClearGfx
 	ld a, [wCurrentMenuItem]
 	call SwitchPartyMon_ClearGfx
+	call SwapPartyMonIcons
 	jp RedrawPartyMenu_
+
+SwapPartyMonIcons:
+    ld a, [wWhichTrade] ;wSwappedMenuItem
+    ld hl, wOAMBuffer
+    ld bc, 16
+    call AddNTimes ; add bc to hl, a times
+    inc hl ; add 2 to hl for tileid.
+    inc hl
+	push hl
+	pop de
+    ld a, [wCurrentMenuItem]
+    ld hl, wOAMBuffer
+    ld bc, 16
+    call AddNTimes ; add bc to hl, a times
+    inc hl ; add 2 to hl for tileid.
+    inc hl
+    ld c, 4 ; four tiles
+.swapMonOAMLoop
+    ld a, [hl]
+    ld [hDividend], a ;hSwapTemp
+    ld a, [de]
+    ld [hl], a
+    ld a, [hDividend] ;hSwapTemp
+    ld [de], a
+    ld a, 4 ; add 4 to get to the next tiles.
+rept 4
+    inc hl
+endr
+rept 4
+    inc de
+endr
+    dec c
+    jr nz, .swapMonOAMLoop
+    ret
 
 SwitchPartyMon_ClearGfx:
 	push af
@@ -806,3 +871,44 @@ SwitchPartyMon_InitVarOrSwapData:
 	pop de
 	pop hl
 	ret
+
+CheckLoadSavedIndex:
+	ld a, [wBagSavedMenuItem]
+	and a
+	jr nz, .done
+	ld a, [wListScrollOffset]
+	and a
+	jr nz, .default
+	; try loading the fishing item offset if we don't have any offsets saved
+	ld a, [wSavedFishingItemOffset]
+	ld [wListScrollOffset], a
+	xor a
+	ld [wSavedFishingItemOffset], a
+	ld a, [wSavedFishingItem]
+	push bc
+	ld b, a
+	xor a
+	ld [wSavedFishingItem], a
+	ld a, b
+	pop bc
+	jr .done
+.default
+	ld a, [wBagSavedMenuItem]	
+.done	
+	ld [wCurrentMenuItem], a
+	ret
+
+StartMenu_SelectPressed::
+	ld a, [wCurrentMenuItem]
+	ld [wBattleAndStartSavedMenuItem], a ; save current menu selection
+	call SaveScreenTilesToBuffer2 ; copy background from wTileMap to wTileMapBackup2
+	ld hl, vChars2 tile $78
+	ld de, PokeballTileGraphics
+	lb bc, BANK(PokeballTileGraphics), 1
+	call CopyVideoData
+	farcall ChangeBox
+	call LoadScreenTilesFromBuffer2 ; restore saved screen
+	call LoadTextBoxTilePatterns
+	call UpdateSprites
+.done
+	jp RedisplayStartMenu

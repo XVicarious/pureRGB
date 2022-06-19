@@ -459,12 +459,60 @@ CinnabarGymGuideText:
 	CheckEvent EVENT_BEAT_BLAINE
 	jr nz, .afterBeat
 	ld hl, CinnabarGymGuidePreBattleText
+	call PrintText
 	jr .done
 .afterBeat
-	ld hl, CinnabarGymGuidePostBattleText
-.done
+	CheckEvent EVENT_GOT_PEWTER_APEX_CHIPS ; have to hear about apex chips to receive them after that
+	jr z, .donePrompt
+	ld hl, CinnabarGymGuidePostBattleTextPrompt
 	call PrintText
+	CheckEvent EVENT_GOT_CINNABAR_APEX_CHIPS
+	jr nz, .alreadyApexChips
+.giveApexChips
+	ld hl, GymGuideMoreApexChipText7
+	call PrintText
+	lb bc, APEX_CHIP, 2
+	call GiveItem
+	jr nc, .BagFull
+	ld hl, ReceivedApexChipsText7
+	call PrintText
+	ld hl, CinnabarGymGuideApexChipFireText
+	call PrintText
+	SetEvent EVENT_GOT_CINNABAR_APEX_CHIPS
+.alreadyApexChips
+	ld hl, AlreadyReceivedApexChipsText7
+	call PrintText
+	jr .done
+.BagFull
+	ld hl, ApexNoRoomText7
+	call PrintText
+.done
 	jp TextScriptEnd
+.donePrompt
+	ld hl, CinnabarGymGuidePostBattleText
+	call PrintText
+	jr .done
+
+ReceivedApexChipsText7:
+	text_far _ReceivedApexChipsText
+	sound_get_item_1
+	text_end
+
+ApexNoRoomText7:
+	text_far _TM34NoRoomText
+	text_end
+
+GymGuideMoreApexChipText7:
+	text_far _GymGuideMoreApexChipText
+	text_end
+
+AlreadyReceivedApexChipsText7:
+	text_far _AlreadyReceivedApexChipsText
+	text_end
+
+CinnabarGymGuideApexChipFireText:
+	text_far _CinnabarGymGuideApexChipFireText
+	text_end
 
 CinnabarGymGuidePreBattleText:
 	text_far _CinnabarGymGuidePreBattleText
@@ -472,4 +520,9 @@ CinnabarGymGuidePreBattleText:
 
 CinnabarGymGuidePostBattleText:
 	text_far _CinnabarGymGuidePostBattleText
+	text_end
+
+CinnabarGymGuidePostBattleTextPrompt:
+	text_far _CinnabarGymGuidePostBattleText
+	text_promptbutton
 	text_end

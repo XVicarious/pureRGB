@@ -40,6 +40,7 @@ HallofFameRoomScript2:
 	ld [wLancesRoomCurScript], a
 	ld [wHallOfFameCurScript], a
 	; Elite 4 events
+	SetEvent EVENT_BECAME_CHAMP
 	ResetEventRange ELITE4_EVENTS_START, ELITE4_CHAMPION_EVENTS_END, 1
 	xor a
 	ld [wHallOfFameCurScript], a
@@ -94,7 +95,26 @@ HallofFameRoomScript1:
 	call DisplayTextID
 	ld a, $ff
 	ld [wJoyIgnore], a
+	; NEW: hide the third pokeball in oak's lab because he's using it in battle now
+	ld a, [wPlayerStarter]
+	cp STARTER1
+	jr z, .hide3
+	cp STARTER2
+	jr z, .hide1
+	ld a, HS_STARTER_BALL_2
+	jr .hideStarterBall
+.hide3
+	ld a, HS_STARTER_BALL_3
+	jr .hideStarterBall
+.hide1
+	ld a, HS_STARTER_BALL_1
+.hideStarterBall
+	ld [wMissableObjectIndex], a
+	predef HideObject
 	ld a, HS_CERULEAN_CAVE_GUY
+	ld [wMissableObjectIndex], a
+	predef HideObject
+	ld a, HS_CERULEAN_ROCKET_HOUSE_1F_GUY
 	ld [wMissableObjectIndex], a
 	predef HideObject
 	ld a, $2

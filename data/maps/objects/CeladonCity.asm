@@ -26,6 +26,7 @@ CeladonCity_Object:
 	bg_event 39, 21, 16 ; CeladonCityText16
 	bg_event 33, 21, 17 ; CeladonCityText17
 	bg_event 27, 21, 18 ; CeladonCityText18
+	bg_event  3, 33, 19 ; CeladonCityText18
 
 	def_object_events
 	object_event  8, 17, SPRITE_LITTLE_GIRL, WALK, ANY_DIR, 1 ; person
@@ -34,8 +35,9 @@ CeladonCity_Object:
 	object_event 25, 22, SPRITE_GRAMPS, STAY, DOWN, 4 ; person
 	object_event 22, 16, SPRITE_GRAMPS, STAY, DOWN, 5 ; person
 	object_event 32, 12, SPRITE_FISHER, STAY, LEFT, 6 ; person
-	object_event 30, 12, SPRITE_MONSTER, STAY, RIGHT, 7 ; person
+	object_event 30, 12, SPRITE_FIGHTING, STAY, RIGHT, 7 ; person
 	object_event 32, 29, SPRITE_ROCKET, WALK, LEFT_RIGHT, 8 ; person
 	object_event 42, 14, SPRITE_ROCKET, WALK, LEFT_RIGHT, 9 ; person
 
 	def_warps_to CELADON_CITY
+	

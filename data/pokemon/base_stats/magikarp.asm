@@ -11,11 +11,14 @@
 	dw MagikarpPicFront, MagikarpPicBackSW
 
 	db SPLASH, NO_MOVE, NO_MOVE, NO_MOVE ; level 1 learnset
-	db GROWTH_SLOW ; growth rate
+	db GROWTH_MEDIUM_SLOW ; growth rate
 
 	; tm/hm learnset
-	tmhm
+	tmhm \
+	BUBBLEBEAM,\
+	BIDE
 	; end
+
 
 	dw BANK(MagikarpPicFront), BANK(MagikarpPicBack)
 

@@ -1,6 +1,7 @@
-_VermilionHouse2Text_560b1::
+_VermilionHouse3Text_561bd::
 	text "I'm the FISHING"
-	line "GURU!"
+	line "GURU's older"
+	cont "brother!"
 
 	para "I simply Looove"
 	line "fishing!"
@@ -9,7 +10,7 @@ _VermilionHouse2Text_560b1::
 	line "fish?"
 	done
 
-_VermilionHouse2Text_560b6::
+_VermilionHouse3Text_561c2::
 	text "Grand! I like"
 	line "your style!"
 
@@ -17,37 +18,37 @@ _VermilionHouse2Text_560b6::
 	line "fish, young one!"
 
 	para "<PLAYER> received"
-	line "an @"
+	line "a @"
 	text_ram wStringBuffer
 	text "!@"
 	text_end
 
-_VermilionHouse2Text_560bb::
-	text_start
-
-	para "Fishing is a way"
-	line "of life!"
-
-	para "From the seas to"
-	line "rivers, go out"
-	cont "and land the big"
-	cont "one, young one!"
-	done
-
-_VermilionHouse2Text_560c0::
+_VermilionHouse3Text_56212::
 	text "Oh... That's so"
 	line "disappointing..."
 	done
 
-_VermilionHouse2Text_560c5::
+_VermilionHouse3Text_56217::
 	text "Hello there,"
 	line "<PLAYER>!"
 
 	para "How are the fish"
 	line "biting?"
+
+	para "That GOOD ROD I"
+	line "gave you is a"
+	cont "reliable piece!"
+
+	para "Try using it"
+	line "in lakes or"
+	cont "the ocean."
+
+	para "It can hook lots"
+	line "of different"
+	cont "#MON!"
 	done
 
-_VermilionHouse2Text_560ca::
+_VermilionHouse3Text_5621c::
 	text "Oh no!"
 
 	para "You have no room"

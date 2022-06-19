@@ -44,6 +44,7 @@ EnterMapAnim::
 	call PlayerSpinWhileMovingDown
 	jr .done
 .flyAnimation
+	call SetCurBlackoutMap ; set the map fly ended up at as the blackout map
 	pop hl
 	ld de, BirdSprite
 	ld hl, vNPCSprites
@@ -88,6 +89,7 @@ PlayerSpinWhileMovingDown:
 	ld [hli], a ; wPlayerSpinWhileMovingUpOrDownAnimMaxY
 	call GetPlayerTeleportAnimFrameDelay
 	ld [hl], a ; wPlayerSpinWhileMovingUpOrDownAnimFrameDelay
+	ld hl, wFacingDirectionList ; FIXED: on GBC or GB there was a visual glitch while this animation happened.
 	jp PlayerSpinWhileMovingUpOrDown
 
 _LeaveMapAnim::
@@ -108,6 +110,7 @@ _LeaveMapAnim::
 	ld [hli], a ; wPlayerSpinWhileMovingUpOrDownAnimMaxY
 	call GetPlayerTeleportAnimFrameDelay
 	ld [hl], a ; wPlayerSpinWhileMovingUpOrDownAnimFrameDelay
+	ld hl, wFacingDirectionList ; FIXED: on GBC or GB there was a visual glitch while this animation happened.
 	call PlayerSpinWhileMovingUpOrDown
 	call IsPlayerStandingOnWarpPadOrHole
 	ld a, b
@@ -395,7 +398,10 @@ FishingAnim:
 	ld de, wOAMBuffer + $9c
 	ld bc, $4
 	call CopyData
-	ld c, 100
+	call Random
+	and %1111111 ; a = random number between 0 and 127
+	add 20 ; minimum of 20 frames after starting to result, so minimum frames fishing = 20 and max = 147
+	ld c, a
 	call DelayFrames
 	ld a, [wRodResponse]
 	and a
@@ -492,6 +498,10 @@ _HandleMidJump::
 	ld a, [wPlayerJumpingYScreenCoordsIndex]
 	ld c, a
 	inc a
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;60fps - only update every other tick
+	call Ledge60fps
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	cp $10
 	jr nc, .finishedJump
 	ld [wPlayerJumpingYScreenCoordsIndex], a
@@ -518,6 +528,18 @@ _HandleMidJump::
 	res 7, [hl] ; not simulating joypad states any more
 	xor a
 	ld [wJoyIgnore], a
+	ret
+
+Ledge60fps:
+	push hl
+	push af
+	ld h, $c2
+	ld l, $0a
+	ld a, [hl]
+	xor $01
+	pop af
+	sub [hl]
+	pop hl
 	ret
 
 PlayerJumpingYScreenCoords:

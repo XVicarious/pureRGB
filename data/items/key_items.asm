@@ -4,7 +4,7 @@ KeyItemFlags:
 	dbit FALSE ; ULTRA_BALL
 	dbit FALSE ; GREAT_BALL
 	dbit FALSE ; POKE_BALL
-	dbit TRUE  ; TOWN_MAP
+	dbit FALSE ; HYPER_BALL
 	dbit TRUE  ; BICYCLE
 	dbit TRUE  ; SURFBOARD
 	dbit TRUE  ; SAFARI_BALL
@@ -43,13 +43,13 @@ KeyItemFlags:
 	dbit TRUE  ; DOME_FOSSIL
 	dbit TRUE  ; HELIX_FOSSIL
 	dbit TRUE  ; SECRET_KEY
-	dbit TRUE  ; UNUSED_ITEM
+	dbit TRUE  ; POCKET_ABRA
 	dbit TRUE  ; BIKE_VOUCHER
 	dbit FALSE ; X_ACCURACY
 	dbit FALSE ; LEAF_STONE
 	dbit TRUE  ; CARD_KEY
 	dbit FALSE ; NUGGET
-	dbit FALSE ; PP_UP_2
+	dbit FALSE ; APEX_CHIP
 	dbit FALSE ; POKE_DOLL
 	dbit FALSE ; FULL_HEAL
 	dbit FALSE ; REVIVE
@@ -68,13 +68,13 @@ KeyItemFlags:
 	dbit FALSE ; X_DEFEND
 	dbit FALSE ; X_SPEED
 	dbit FALSE ; X_SPECIAL
-	dbit TRUE  ; COIN_CASE
+	dbit TRUE  ; LOST_WALLET
 	dbit TRUE  ; OAKS_PARCEL
 	dbit TRUE  ; ITEMFINDER
 	dbit TRUE  ; SILPH_SCOPE
 	dbit TRUE  ; POKE_FLUTE
 	dbit TRUE  ; LIFT_KEY
-	dbit FALSE ; EXP_ALL
+	dbit TRUE  ; BOOSTER_CHIP
 	dbit TRUE  ; OLD_ROD
 	dbit TRUE  ; GOOD_ROD
 	dbit TRUE  ; SUPER_ROD

@@ -14,10 +14,10 @@ ExternalMapEntries:
 	external_map 14,  5, LavenderTownName
 	external_map 10,  9, VermilionCityName
 	external_map  7,  5, CeladonCityName
+	external_map 10,  5, SaffronCityName
 	external_map  8, 13, FuchsiaCityName
 	external_map  2, 15, CinnabarIslandName
 	external_map  0,  2, IndigoPlateauName
-	external_map 10,  5, SaffronCityName
 	external_map  0,  0, PalletTownName ; unused
 	external_map  2, 10, Route1Name
 	external_map  2,  6, Route2Name
@@ -76,6 +76,7 @@ InternalMapEntries:
 	internal_map BILLS_HOUSE,                   12,  0, SeaCottageName
 	internal_map VERMILION_DOCK,                10,  9, VermilionCityName
 	internal_map SS_ANNE_B1F_ROOMS,              9, 10, SSAnneName
+	internal_map CERULEAN_ROCKET_HOUSE_B1F,     10,  2, CeruleanCityName
 	internal_map VICTORY_ROAD_1F,                0,  4, VictoryRoadName
 	internal_map HALL_OF_FAME,                   0,  2, PokemonLeagueName
 	internal_map UNDERGROUND_PATH_NORTH_SOUTH,  10,  5, UndergroundPathName
@@ -106,7 +107,9 @@ InternalMapEntries:
 	internal_map VERMILION_TRADE_HOUSE,         10,  9, VermilionCityName
 	internal_map DIGLETTS_CAVE,                  3,  4, DiglettsCaveName
 	internal_map VICTORY_ROAD_3F,                0,  4, VictoryRoadName
-	internal_map UNUSED_MAP_CE,                  7,  5, RocketHQName
+	internal_map ROCKET_HIDEOUT_ELEVATOR,        7,  5, RocketHQName
+	internal_map FUCHSIA_TREE_DELETER_HOUSE,     8, 13, FuchsiaCityName
+	internal_map FOSSIL_GUYS_HOUSE,             10,  5, SaffronCityName
 	internal_map SILPH_CO_8F,                   10,  5, SilphCoName
 	internal_map POKEMON_MANSION_B1F,            2, 15, PokemonMansionName
 	internal_map SAFARI_ZONE_NORTH_REST_HOUSE,   8, 12, SafariZoneName

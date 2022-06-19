@@ -8,10 +8,10 @@ MapHeaderPointers::
 	dw LavenderTown_h
 	dw VermilionCity_h
 	dw CeladonCity_h
+	dw SaffronCity_h
 	dw FuchsiaCity_h
 	dw CinnabarIsland_h
 	dw IndigoPlateau_h
-	dw SaffronCity_h
 	dw SaffronCity_h ; UNUSED_MAP_0B
 	dw Route1_h
 	dw Route2_h
@@ -79,7 +79,7 @@ MapHeaderPointers::
 	dw UndergroundPathRoute6_h ; UNDERGROUND_PATH_ROUTE_6_COPY
 	dw Route7Gate_h
 	dw UndergroundPathRoute7_h
-	dw UndergroundPathRoute7Copy_h
+	dw UndergroundPathRoute7_h ; unused
 	dw Route8Gate_h
 	dw UndergroundPathRoute8_h
 	dw RockTunnelPokecenter_h
@@ -106,9 +106,9 @@ MapHeaderPointers::
 	dw SSAnne1FRooms_h
 	dw SSAnne2FRooms_h
 	dw SSAnneB1FRooms_h
-	dw LancesRoom_h ; UNUSED_MAP_69
-	dw LancesRoom_h ; UNUSED_MAP_6A
-	dw LancesRoom_h ; UNUSED_MAP_6B
+	dw CeruleanOldRodHouse_h ; UNUSED_MAP_69
+	dw CeruleanRocketHouse1F_h ; UNUSED_MAP_6A
+	dw CeruleanRocketHouseB1F_h ; UNUSED_MAP_6B
 	dw VictoryRoad1F_h
 	dw LancesRoom_h ; UNUSED_MAP_6D
 	dw LancesRoom_h ; UNUSED_MAP_6E
@@ -205,8 +205,8 @@ MapHeaderPointers::
 	dw RocketHideoutB3F_h
 	dw RocketHideoutB4F_h
 	dw RocketHideoutElevator_h
-	dw RocketHideoutElevator_h ; UNUSED_MAP_CC
-	dw RocketHideoutElevator_h ; UNUSED_MAP_CD
+	dw FuchsiaTreeDeleterHouse_h ; UNUSED_MAP_CC
+	dw FossilGuysHouse_h ; UNUSED_MAP_CC
 	dw RocketHideoutElevator_h ; UNUSED_MAP_CE
 	dw SilphCo2F_h
 	dw SilphCo3F_h

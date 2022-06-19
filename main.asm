@@ -11,7 +11,6 @@ INCLUDE "engine/movie/title.asm"
 INCLUDE "engine/pokemon/load_mon_data.asm"
 INCLUDE "data/items/prices.asm"
 INCLUDE "data/items/names.asm"
-INCLUDE "data/text/unused_names.asm"
 INCLUDE "engine/gfx/sprite_oam.asm"
 INCLUDE "engine/gfx/oam_dma.asm"
 INCLUDE "engine/link/print_waiting_text.asm"
@@ -55,7 +54,6 @@ INCLUDE "engine/overworld/daycare_exp.asm"
 INCLUDE "data/maps/hide_show_data.asm"
 INCLUDE "engine/overworld/field_move_messages.asm"
 INCLUDE "engine/items/inventory.asm"
-INCLUDE "engine/overworld/wild_mons.asm"
 INCLUDE "engine/items/item_effects.asm"
 INCLUDE "engine/menus/draw_badges.asm"
 INCLUDE "engine/overworld/update_map.asm"
@@ -190,16 +188,12 @@ SECTION "Battle Engine 7", ROMX
 INCLUDE "data/moves/moves.asm"
 INCLUDE "data/pokemon/base_stats.asm"
 INCLUDE "data/pokemon/cries.asm"
-INCLUDE "engine/battle/unused_stats_functions.asm"
+INCLUDE "engine/battle/stats_functions.asm"
 INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
 INCLUDE "engine/battle/trainer_ai.asm"
 INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
 INCLUDE "gfx/trade.asm"
 INCLUDE "engine/pokemon/evos_moves.asm"
-INCLUDE "engine/battle/move_effects/heal.asm"
-INCLUDE "engine/battle/move_effects/transform.asm"
-INCLUDE "engine/battle/move_effects/reflect_light_screen.asm"
-
 
 SECTION "Battle Core", ROMX
 
@@ -240,6 +234,12 @@ SECTION "Battle Engine 8", ROMX
 
 INCLUDE "engine/battle/init_battle_variables.asm"
 INCLUDE "engine/battle/move_effects/paralyze.asm"
+INCLUDE "engine/battle/move_effects/burn.asm"
+; moved from battle engine 7
+INCLUDE "engine/battle/move_effects/heal.asm"
+INCLUDE "engine/battle/move_effects/transform.asm"
+INCLUDE "engine/battle/move_effects/reflect_light_screen.asm"
+
 
 
 SECTION "Hidden Objects 2", ROMX
@@ -291,6 +291,8 @@ INCLUDE "engine/events/hidden_objects/route_15_binoculars.asm"
 INCLUDE "engine/events/hidden_objects/museum_fossils.asm"
 INCLUDE "engine/events/hidden_objects/school_blackboard.asm"
 INCLUDE "engine/events/hidden_objects/vermilion_gym_trash.asm"
+INCLUDE "engine/events/hidden_objects/fossil_guys_pc.asm"
+INCLUDE "engine/events/hidden_objects/cerulean_rocket_house.asm"
 
 
 SECTION "Cinnabar Lab Fossils", ROMX
@@ -343,21 +345,42 @@ SECTION "Itemfinder 2", ROMX
 
 INCLUDE "engine/menus/league_pc.asm"
 INCLUDE "engine/events/hidden_items.asm"
-
+; moved these from bank 1E
+INCLUDE "engine/overworld/elevator.asm"
+INCLUDE "engine/items/tm_prices.asm"
+INCLUDE "engine/movie/evolution.asm"
+INCLUDE "gfx/fishing.asm"
+INCLUDE "engine/overworld/cut2.asm"
+INCLUDE "engine/overworld/dust_smoke.asm"
 
 SECTION "bank1E", ROMX
 
 INCLUDE "engine/battle/animations.asm"
-INCLUDE "engine/overworld/cut2.asm"
-INCLUDE "engine/overworld/dust_smoke.asm"
-INCLUDE "gfx/fishing.asm"
 INCLUDE "data/moves/animations.asm"
 INCLUDE "data/battle_anims/subanimations.asm"
 INCLUDE "data/battle_anims/frame_blocks.asm"
-INCLUDE "engine/movie/evolution.asm"
-INCLUDE "engine/overworld/elevator.asm"
-INCLUDE "engine/items/tm_prices.asm"
+
+SECTION "Wild Mons", ROMX
+; moved from bank3
+INCLUDE "engine/overworld/wild_mons.asm"
+; new code
+INCLUDE "engine/overworld/wild_mon_alt_palettes.asm"
 
 
-SECTION "newMenus", ROMX
+SECTION "Party Sprites", ROMX, BANK[$34]
+
+PartyMonSprites1: INCBIN "gfx/icons/menusprites1.2bpp"
+PartyMonSprites2: INCBIN "gfx/icons/menusprites2.2bpp"
+
+
+SECTION "newCode", ROMX
+
+INCLUDE "engine/gfx/front_sprite_options.asm"
 INCLUDE "engine/menus/sprite_options_menu.asm"
+INCLUDE "engine/menus/sprite_options_menu2.asm"
+INCLUDE "engine/gfx/mon_icons2.asm"
+INCLUDE "engine/menus/menu_list_tm_name_loader.asm"
+INCLUDE "engine/overworld/select_button_functionality.asm"
+INCLUDE "engine/overworld/use_another_repel.asm"
+INCLUDE "engine/menus/wrap_list_menu.asm"
+INCLUDE "engine/items/last_two_fishing_gurus_script.asm"

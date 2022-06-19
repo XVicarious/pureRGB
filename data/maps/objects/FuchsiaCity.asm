@@ -11,6 +11,7 @@ FuchsiaCity_Object:
 	warp_event 22, 13, FUCHSIA_MEETING_ROOM, 1
 	warp_event 31, 27, FUCHSIA_GOOD_ROD_HOUSE, 2
 	warp_event 31, 24, FUCHSIA_GOOD_ROD_HOUSE, 1
+	warp_event 15, 27, FUCHSIA_TREE_DELETER_HOUSE, 1
 
 	def_bg_events
 	bg_event 15, 23, 11 ; FuchsiaCityText11
@@ -36,8 +37,8 @@ FuchsiaCity_Object:
 	object_event 31,  5, SPRITE_FAIRY, WALK, ANY_DIR, 5 ; person
 	object_event 25,  6, SPRITE_POKE_BALL, STAY, NONE, 6 ; person
 	object_event 12,  6, SPRITE_MONSTER, WALK, LEFT_RIGHT, 7 ; person
-	object_event 30, 12, SPRITE_MONSTER, WALK, LEFT_RIGHT, 8 ; person
+	object_event 30, 12, SPRITE_MONSTER2, STAY, NONE, 8 ; person
 	object_event  8, 17, SPRITE_SEEL, WALK, ANY_DIR, 9 ; person
-	object_event  6,  5, SPRITE_FOSSIL, STAY, NONE, 10 ; person
+	object_event  6,  5, SPRITE_FOSSIL, STAY, DOWN, 10 ; person
 
 	def_warps_to FUCHSIA_CITY

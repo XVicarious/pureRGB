@@ -144,8 +144,7 @@ CeladonGameCornerText2:
 	ld a, [wCurrentMenuItem]
 	and a
 	jr nz, .asm_48d0f
-	ld b, COIN_CASE
-	call IsItemInBag
+	CheckEvent EVENT_GOT_COIN_CASE
 	jr z, .asm_48d19
 	call Has9990Coins
 	jr nc, .asm_48d14
@@ -230,8 +229,7 @@ CeladonGameCornerText5:
 	jr nz, .asm_48d89
 	ld hl, CeladonGameCornerText_48d9c
 	call PrintText
-	ld b, COIN_CASE
-	call IsItemInBag
+	CheckEvent EVENT_GOT_COIN_CASE
 	jr z, .asm_48d93
 	call Has9990Coins
 	jr nc, .asm_48d8e
@@ -285,12 +283,58 @@ CeladonGameCornerText6:
 CeladonGameCornerText7:
 	text_asm
 	CheckEvent EVENT_BEAT_ERIKA
+	jr nz, .afterBattle
 	ld hl, CeladonGameCornerText_48dca
-	jr z, .asm_48dc4
-	ld hl, CeladonGameCornerText_48dcf
-.asm_48dc4
 	call PrintText
+	jr .done
+.afterBattle
+	ld hl, CeladonGameCornerText_gymguide
+	call PrintText
+	CheckEvent EVENT_GOT_PEWTER_APEX_CHIPS ; have to hear about apex chips to receive them after that
+	jr z, .gameCornerPrizes
+	CheckEvent EVENT_GOT_CELADON_APEX_CHIPS
+	jr nz, .gameCornerPrizes
+.giveApexChips
+	ld hl, GymGuideMoreApexChipText4
+	call PrintText
+	lb bc, APEX_CHIP, 2
+	call GiveItem
+	jr nc, .BagFull
+	ld hl, ReceivedApexChipsText4
+	call PrintText
+	ld hl, CeladonGameCornerGymGuideApexChipGrassText
+	call PrintText
+	SetEvent EVENT_GOT_CELADON_APEX_CHIPS
+.gameCornerPrizes
+	ld hl, CeladonGameCornerText_48dcf
+	call PrintText
+	jr .done
+.BagFull
+	ld hl, ApexNoRoomText4
+	call PrintText
+.done
 	jp TextScriptEnd
+
+ReceivedApexChipsText4:
+	text_far _ReceivedApexChipsText
+	sound_get_item_1
+	text_end
+
+ApexNoRoomText4:
+	text_far _TM34NoRoomText
+	text_end
+
+GymGuideMoreApexChipText4:
+	text_far _GymGuideMoreApexChipText
+	text_end
+
+CeladonGameCornerText_gymguide:
+	text_far _CeladonGameCornerText_gymguide
+	text_end
+
+CeladonGameCornerGymGuideApexChipGrassText:
+	text_far _CeladonGameCornerGymGuideApexChipGrassText
+	text_end
 
 CeladonGameCornerText_48dca:
 	text_far _CeladonGameCornerText_48dca
@@ -310,8 +354,7 @@ CeladonGameCornerText9:
 	jr nz, .asm_48e13
 	ld hl, CeladonGameCornerText_48e26
 	call PrintText
-	ld b, COIN_CASE
-	call IsItemInBag
+	CheckEvent EVENT_GOT_COIN_CASE
 	jr z, .asm_48e1d
 	call Has9990Coins
 	jr nc, .asm_48e18
@@ -362,8 +405,7 @@ CeladonGameCornerText10:
 	jr nz, .asm_48e75
 	ld hl, CeladonGameCornerText_48e88
 	call PrintText
-	ld b, COIN_CASE
-	call IsItemInBag
+	CheckEvent EVENT_GOT_COIN_CASE
 	jr z, .asm_48e7f
 	call Has9990Coins
 	jr z, .asm_48e7a

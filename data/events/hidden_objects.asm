@@ -43,7 +43,7 @@ HiddenObjectMaps:
 	db SAFFRON_POKECENTER
 	db POKEMON_TOWER_5F
 	db ROUTE_13
-	db SAFARI_ZONE_GATE
+	db SAFARI_ZONE_CENTER
 	db SAFARI_ZONE_WEST
 	db SILPH_CO_5F
 	db SILPH_CO_9F
@@ -84,6 +84,17 @@ HiddenObjectMaps:
 	db VERMILION_CITY
 	db CERULEAN_CITY
 	db ROUTE_4
+	db FOSSIL_GUYS_HOUSE
+	db ROUTE_2
+	db ROUTE_6
+	db ROUTE_8
+	db ROUTE_14
+	db ROUTE_16
+	db ROUTE_18
+	db PEWTER_CITY
+	db SAFARI_ZONE_NORTH
+	db CERULEAN_ROCKET_HOUSE_1F
+	db CERULEAN_ROCKET_HOUSE_B1F
 	db -1 ; end
 
 HiddenObjectPointers:
@@ -132,7 +143,7 @@ HiddenObjectPointers:
 	dw SaffronPokecenterHiddenObjects
 	dw PokemonTower5HiddenObjects
 	dw Route13HiddenObjects
-	dw SafariZoneEntranceHiddenObjects
+	dw SafariZoneCenterHiddenObjects
 	dw SafariZoneWestHiddenObjects
 	dw SilphCo5FHiddenObjects
 	dw SilphCo9FHiddenObjects
@@ -173,6 +184,17 @@ HiddenObjectPointers:
 	dw VermilionCityHiddenObjects
 	dw CeruleanCityHiddenObjects
 	dw Route4HiddenObjects
+	dw FossilGuysHouseHiddenObjects
+	dw Route2HiddenObjects
+	dw Route6HiddenObjects
+	dw Route8HiddenObjects
+	dw Route14HiddenObjects
+	dw Route16HiddenObjects
+	dw Route18HiddenObjects
+	dw PewterCityHiddenObjects
+	dw SafariZoneNorthHiddenObjects
+	dw CeruleanRocketHouse1FHiddenObjects
+	dw CeruleanRocketHouseB1FHiddenObjects
 
 hidden_object: MACRO
 	db \2 ; y coord
@@ -389,7 +411,7 @@ CinnabarGymHiddenObjects:
 	hidden_object 10,  1, (TRUE  << 4) | 2, PrintCinnabarQuiz
 	hidden_object  9,  7, (TRUE  << 4) | 3, PrintCinnabarQuiz
 	hidden_object  9, 13, (TRUE  << 4) | 4, PrintCinnabarQuiz
-	hidden_object  1, 13, (FALSE << 4) | 5, PrintCinnabarQuiz
+	hidden_object  1, 13, (TRUE  << 4) | 5, PrintCinnabarQuiz
 	hidden_object  1,  7, (TRUE  << 4) | 6, PrintCinnabarQuiz
 	db -1 ; end
 
@@ -475,10 +497,11 @@ PokemonTower5HiddenObjects:
 Route13HiddenObjects:
 	hidden_object  1, 14, PP_UP, HiddenItems
 	hidden_object 16, 13, CALCIUM, HiddenItems
+	hidden_object 42,  5, SURFBOARD, HiddenItems ;NEW
 	db -1 ; end
 
-SafariZoneEntranceHiddenObjects:
-	hidden_object 10,  1, NUGGET, HiddenItems ; inaccessible
+SafariZoneCenterHiddenObjects:
+	hidden_object 4, 14, NUGGET, HiddenItems ; used to be unobtainable, now it's obtainable in safari zone center
 	db -1 ; end
 
 SafariZoneWestHiddenObjects:
@@ -491,6 +514,7 @@ SilphCo5FHiddenObjects:
 
 SilphCo9FHiddenObjects:
 	hidden_object  2, 15, MAX_POTION, HiddenItems
+	hidden_object 10,  7, SURFBOARD, HiddenItems
 	db -1 ; end
 
 CopycatsHouse2FHiddenObjects:
@@ -649,6 +673,8 @@ UndergroundPathWeHiddenObjects:
 
 CeladonCityHiddenObjects:
 	hidden_object 48, 15, PP_UP, HiddenItems
+	hidden_object  3,  2, SURFBOARD, HiddenItems
+	hidden_object 48,  7, SURFBOARD, HiddenItems
 	db -1 ; end
 
 SeafoamIslands4HiddenObjects:
@@ -666,3 +692,72 @@ CeruleanCityHiddenObjects:
 Route4HiddenObjects:
 	hidden_object 40,  3, GREAT_BALL, HiddenItems
 	db -1 ; end
+
+; new hidden object areas start here
+
+FossilGuysHouseHiddenObjects:
+	hidden_object 2, 4, SPRITE_FACING_UP, FossilGuysPC
+	db -1 ; end	
+
+Route2HiddenObjects:
+	hidden_object 18, 66, SURFBOARD, HiddenItems
+	db -1 ; end
+
+Route6HiddenObjects:
+	hidden_object 6, 4, SURFBOARD, HiddenItems
+	db -1 ; end
+
+Route8HiddenObjects:
+	hidden_object 34, 14, SURFBOARD, HiddenItems
+	hidden_object 19,  5, SURFBOARD, HiddenItems
+	db -1 ; end
+
+Route14HiddenObjects:
+	hidden_object  4, 19, SURFBOARD, HiddenItems
+	db -1 ; end
+
+Route16HiddenObjects:
+	hidden_object  2,  2, SURFBOARD, HiddenItems
+	db -1 ; end
+
+Route18HiddenObjects:
+	hidden_object  7,  9, SURFBOARD, HiddenItems
+	db -1 ; end
+
+PewterCityHiddenObjects:
+	hidden_object 23,  2, SURFBOARD, HiddenItems
+	db -1 ; end
+
+SafariZoneNorthHiddenObjects:
+	hidden_object  7, 13, SURFBOARD, HiddenItems
+	db -1 ; end
+
+CeruleanRocketHouse1FHiddenObjects:
+	hidden_object 3, 3, ANY_FACING, PrintRocketSNESText
+	db -1 ; end	
+
+CeruleanRocketHouseB1FHiddenObjects:
+	hidden_object 1, 10, SPRITE_FACING_UP, PrintRocketBasementLeftComputerText
+	hidden_object 0, 10, SPRITE_FACING_UP, PrintRocketBasementLeftComputerText
+	hidden_object 4, 10, SPRITE_FACING_UP, PrintRocketBasementCenterComputerText
+	hidden_object 5, 10, SPRITE_FACING_UP, PrintRocketBasementCenterComputerText
+	hidden_object 6, 10, SPRITE_FACING_UP, PrintRocketBasementLeftPaperText
+	hidden_object 8, 10, SPRITE_FACING_UP, PrintRocketBasementRightComputerText
+	hidden_object 9, 10, SPRITE_FACING_UP, PrintRocketBasementRightComputerText
+	hidden_object 10, 10, SPRITE_FACING_UP, PrintRocketBasementRightPaperText
+	hidden_object 2,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 3,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 4,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 5,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 6,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 7,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 8,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 9,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 10,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 11,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 12,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 13,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 14,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	hidden_object 15,  5, SPRITE_FACING_UP, PrintRocketBasementMachineText
+	db -1 ; end	
+

@@ -6,6 +6,7 @@ Route25_Object:
 
 	def_bg_events
 	bg_event 43,  3, 11 ; Route25Text11
+	bg_event 53,  5, 12 ; Route25Text12
 
 	def_object_events
 	object_event 14,  2, SPRITE_YOUNGSTER, STAY, DOWN, 1, OPP_YOUNGSTER, 5
@@ -17,6 +18,6 @@ Route25_Object:
 	object_event  8,  4, SPRITE_HIKER, STAY, RIGHT, 7, OPP_HIKER, 2
 	object_event 23,  9, SPRITE_HIKER, STAY, UP, 8, OPP_HIKER, 3
 	object_event 13,  7, SPRITE_HIKER, STAY, RIGHT, 9, OPP_HIKER, 4
-	object_event 22,  2, SPRITE_POKE_BALL, STAY, NONE, 10, TM_SEISMIC_TOSS
+	object_event 22,  2, SPRITE_POKE_BALL, STAY, NONE, 10, TM_MEGA_DRAIN
 
 	def_warps_to ROUTE_25

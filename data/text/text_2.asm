@@ -318,6 +318,19 @@ _GameOverText::
 	line "GAME is over!"
 	done
 
+_RangerHuntSuccessText::
+	text "PA: <PLAYER>"
+	line "has defeated all"
+	cont "5 RANGERs!!"
+
+	para "Congratulations!"
+	done
+
+_CinnabarGymQuizStartText::
+	text "#MON Quiz!"
+	line "Here we go!"
+	prompt
+
 _CinnabarGymQuizIntroText::
 	text "#MON Quiz!"
 
@@ -338,39 +351,38 @@ _CinnabarGymQuizIntroText::
 	prompt
 
 _CinnabarQuizQuestionsText1::
-	text "CATERPIE evolves"
+	text "METAPOD evolves"
 	line "into BUTTERFREE?"
-	done
+	prompt
 
 _CinnabarQuizQuestionsText2::
-	text "There are 9"
+	text "Are there 9"
 	line "certified #MON"
 	cont "LEAGUE BADGEs?"
-	done
+	prompt
 
 _CinnabarQuizQuestionsText3::
-	text "POLIWAG evolves 3"
-	line "times?"
-	done
+	text "Does POLIWAG"
+	line "evolve 3 times?"
+	prompt
 
 _CinnabarQuizQuestionsText4::
-	text "Are thunder moves"
-	line "effective against"
-	cont "ground element-"
+	text "Are electric"
+	line "moves effective"
+	cont "against ground-"
 	cont "type #MON?"
-	done
+	prompt
 
 _CinnabarQuizQuestionsText5::
-	text "#MON of the"
-	line "same kind and"
-	cont "level are not"
-	cont "identical?"
-	done
+	text "Are #MON of the"
+	line "same species and"
+	cont "level identical?"
+	prompt
 
 _CinnabarQuizQuestionsText6::
 	text "TM28 contains"
 	line "TOMBSTONER?"
-	done
+	prompt
 
 _CinnabarGymQuizCorrectText::
 	text "You're absolutely"
@@ -653,6 +665,9 @@ _ViridianBlackboardSleepText::
 	line "attack if it's"
 	cont "asleep!"
 
+	para "It can wake up"
+	line "during battle."
+
 	para "#MON will stay"
 	line "asleep even after"
 	cont "battles."
@@ -678,6 +693,9 @@ _ViridianBlackboardPrlzText::
 	line "make #MON"
 	cont "moves misfire!"
 
+	para "It cuts SPEED"
+	line "stat as well."
+
 	para "Paralysis remains"
 	line "after battles."
 
@@ -687,7 +705,7 @@ _ViridianBlackboardPrlzText::
 
 _ViridianBlackboardBurnText::
 	text "A burn reduces"
-	line "power and speed."
+	line "the ATTACK stat."
 	cont "It also causes"
 	cont "ongoing damage."
 
@@ -889,7 +907,7 @@ _UseNextMonText::
 	done
 
 _Rival1WinText::
-	text "<RIVAL>: Yeah! Am"
+	text "Yeah! Am"
 	line "I great or what?"
 	prompt
 
@@ -1480,6 +1498,15 @@ _WhatDoYouWantText::
 _WhatToDepositText::
 	text "What do you want"
 	line "to deposit?"
+	done
+
+_WantToDepositText::
+	text "Deposit to PC?"
+	done
+
+_DepositHowManyToPCText::
+	text "Deposit how many"
+	line "to PC?"
 	done
 
 _DepositHowManyText::

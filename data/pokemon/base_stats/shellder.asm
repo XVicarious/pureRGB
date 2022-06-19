@@ -11,14 +11,31 @@
 	dw ShellderPicFront, ShellderPicBackSW
 
 	db TACKLE, WITHDRAW, NO_MOVE, NO_MOVE ; level 1 learnset
-	db GROWTH_SLOW ; growth rate
+	db GROWTH_MEDIUM_SLOW ; growth rate
 
 	; tm/hm learnset
-	tmhm TOXIC,        TAKE_DOWN,    DOUBLE_EDGE,  BUBBLEBEAM,   WATER_GUN,    \
-	     ICE_BEAM,     BLIZZARD,     RAGE,         TELEPORT,     MIMIC,        \
-	     DOUBLE_TEAM,  REFLECT,      BIDE,         SELFDESTRUCT, SWIFT,        \
-	     REST,         EXPLOSION,    TRI_ATTACK,   SUBSTITUTE,   SURF
+	tmhm \
+	TOXIC,\
+	BODY_SLAM,\
+	DOUBLE_EDGE,\
+	BUBBLEBEAM,\
+	AURORA_BEAM,\
+	ICE_BEAM,\
+	BLIZZARD,\
+	AMNESIA,\
+	CRABHAMMER,\
+	REFLECT,\
+	BIDE,\
+	BARRAGE,\
+	SLAM,\
+	LIGHT_SCREEN,\
+	SLUDGE,\
+	GLARE,\
+	SUBSTITUTE,\
+	SURF,\
+	FLASH
 	; end
+
 
 	dw BANK(ShellderPicFront), BANK(ShellderPicBack)
 

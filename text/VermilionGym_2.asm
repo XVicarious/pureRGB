@@ -141,5 +141,16 @@ _VermilionGymGuidePreBattleText::
 
 _VermilionGymGuidePostBattleText::
 	text "Whew! That match"
-	line "was electric!"
-	done
+	line "was electric!@"
+	text_end
+
+_VermilionGymGuideApexChipElectricText::
+	text "For electric"
+	line "#MON, an "
+	cont "APEX CHIP will"
+	cont "simulate a vast"
+	cont "grassy steppe"
+	cont "with frequent"
+	cont "storms,lightning"
+	cont "and thunder!"
+	prompt

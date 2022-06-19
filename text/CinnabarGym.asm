@@ -208,5 +208,16 @@ _CinnabarGymGuidePreBattleText::
 
 _CinnabarGymGuidePostBattleText::
 	text "<PLAYER>! You beat"
-	line "that fire brand!"
-	done
+	line "that fire brand!@"
+	text_end
+
+_CinnabarGymGuideApexChipFireText::
+	text "An APEX CHIP will"
+	line "swiftly transport"
+	cont "a fire #MON"
+	cont "to a sweltering"
+	cont "volcano caldera,"
+	cont "with flowing lava"
+	cont "and plenty of"
+	cont "excitement!"
+	prompt 

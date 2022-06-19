@@ -139,7 +139,7 @@ ViridianGymReceiveTM27:
 	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_VIRIDIAN_GYM_GIOVANNI
-	lb bc, TM_FISSURE, 1
+	lb bc, TM_EARTHQUAKE, 1
 	call GiveItem
 	jr nc, .BagFull
 	ld a, $d
@@ -426,10 +426,57 @@ ViridianGymGuideText:
 	call PrintText
 	jr .done
 .afterBeat
-	ld hl, ViridianGymGuidePostBattleText
+	CheckEvent EVENT_GOT_PEWTER_APEX_CHIPS ; have to hear about apex chips to receive them after that
+	jr z, .donePrompt
+	ld hl, ViridianGymGuidePostBattleTextPrompt
+	call PrintText
+	CheckEvent EVENT_GOT_CINNABAR_APEX_CHIPS
+	jr nz, .alreadyApexChips
+.giveApexChips
+	ld hl, GymGuideMoreApexChipText8
+	call PrintText
+	lb bc, APEX_CHIP, 2
+	call GiveItem
+	jr nc, .BagFull
+	ld hl, ReceivedApexChipsText8
+	call PrintText
+	ld hl, ViridianGymGuideApexChipGroundText
+	call PrintText
+	SetEvent EVENT_GOT_CINNABAR_APEX_CHIPS
+.alreadyApexChips
+	ld hl, AlreadyReceivedApexChipsText8
+	call PrintText
+	jr .done
+.BagFull
+	ld hl, ApexNoRoomText8
 	call PrintText
 .done
 	jp TextScriptEnd
+.donePrompt
+	ld hl, ViridianGymGuidePostBattleText
+	call PrintText
+	jr .done
+
+ReceivedApexChipsText8:
+	text_far _ReceivedApexChipsText
+	sound_get_item_1
+	text_end
+
+ApexNoRoomText8:
+	text_far _TM34NoRoomText
+	text_end
+
+GymGuideMoreApexChipText8:
+	text_far _GymGuideMoreApexChipText
+	text_end
+
+AlreadyReceivedApexChipsText8:
+	text_far _ViridianGymGuideSeeAtPokemonLeagueText
+	text_end
+
+ViridianGymGuideApexChipGroundText:
+	text_far _ViridianGymGuideApexChipGroundText
+	text_end
 
 ViridianGymGuidePreBattleText:
 	text_far _ViridianGymGuidePreBattleText
@@ -437,4 +484,9 @@ ViridianGymGuidePreBattleText:
 
 ViridianGymGuidePostBattleText:
 	text_far _ViridianGymGuidePostBattleText
+	text_end
+
+ViridianGymGuidePostBattleTextPrompt:
+	text_far _ViridianGymGuidePostBattleText
+	text_promptbutton
 	text_end

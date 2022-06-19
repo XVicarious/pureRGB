@@ -47,7 +47,7 @@ SaffronGymReceiveTM46:
 	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_SABRINA
-	lb bc, TM_PSYWAVE, 1
+	lb bc, TM_PSYCHIC_M, 1
 	call GiveItem
 	jr nc, .BagFull
 	ld a, $b
@@ -213,10 +213,57 @@ SaffronGymGuideText:
 	call PrintText
 	jr .done
 .afterBeat
-	ld hl, SaffronGymGuidePostBattleText
+	CheckEvent EVENT_GOT_PEWTER_APEX_CHIPS ; have to hear about apex chips to receive them after that
+	jr z, .donePrompt
+	ld hl, SaffronGymGuidePostBattleTextPrompt
+	call PrintText
+	CheckEvent EVENT_GOT_SAFFRON_APEX_CHIPS
+	jr nz, .alreadyApexChips
+.giveApexChips
+	ld hl, GymGuideMoreApexChipText6
+	call PrintText
+	lb bc, APEX_CHIP, 2
+	call GiveItem
+	jr nc, .BagFull
+	ld hl, ReceivedApexChipsText6
+	call PrintText
+	ld hl, SaffronGymGuideApexChipPsychicText
+	call PrintText
+	SetEvent EVENT_GOT_SAFFRON_APEX_CHIPS
+.alreadyApexChips
+	ld hl, AlreadyReceivedApexChipsText6
+	call PrintText
+	jr .done
+.BagFull
+	ld hl, ApexNoRoomText6
 	call PrintText
 .done
 	jp TextScriptEnd
+.donePrompt
+	ld hl, SaffronGymGuidePostBattleText
+	call PrintText
+	jr .done
+
+ReceivedApexChipsText6:
+	text_far _ReceivedApexChipsText
+	sound_get_item_1
+	text_end
+
+ApexNoRoomText6:
+	text_far _TM34NoRoomText
+	text_end
+
+GymGuideMoreApexChipText6:
+	text_far _GymGuideMoreApexChipText
+	text_end
+
+AlreadyReceivedApexChipsText6:
+	text_far _AlreadyReceivedApexChipsText
+	text_end
+
+SaffronGymGuideApexChipPsychicText:
+	text_far _SaffronGymGuideApexChipPsychicText
+	text_end
 
 SaffronGymGuidePreBattleText:
 	text_far _SaffronGymGuidePreBattleText
@@ -224,6 +271,11 @@ SaffronGymGuidePreBattleText:
 
 SaffronGymGuidePostBattleText:
 	text_far _SaffronGymGuidePostBattleText
+	text_end
+
+SaffronGymGuidePostBattleTextPrompt:
+	text_far _SaffronGymGuidePostBattleText
+	text_promptbutton
 	text_end
 
 SaffronGymBattleText1:

@@ -143,12 +143,15 @@ TryingToLearn:
 	inc hl
 	ld a, [wNumMovesMinusOne]
 	ld [hli], a ; wMaxMenuItem
-	ld a, A_BUTTON | B_BUTTON
+	ld a, A_BUTTON | START | B_BUTTON
 	ld [hli], a ; wMenuWatchedKeys
 	ld [hl], 0 ; wLastMenuItem
 	ld hl, hUILayoutFlags
 	set 1, [hl]
+.menuLoop	
 	call HandleMenuInput
+	bit BIT_A_BUTTON, a ; FIXED: Press START to learn a move instead of A to prevent accidental mashing A move-forget woes
+	jr nz, .pressStart
 	ld hl, hUILayoutFlags
 	res 1, [hl]
 	push af
@@ -164,21 +167,27 @@ TryingToLearn:
 	add hl, bc
 	ld a, [hl]
 	push af
-	push bc
-	call IsMoveHM
-	pop bc
+	;push bc   ; FIXED: moves are never considered HMs and can always be deleted if desired
+	;call IsMoveHM
+	;pop bc
 	pop de
 	ld a, d
-	jr c, .hm
+	;jr c, .hm
 	pop hl
 	add hl, bc
 	and a
 	ret
-.hm
-	ld hl, HMCantDeleteText
+;.hm ; FIXED: moves are never considered HMs and can always be deleted if desired
+;	ld hl, HMCantDeleteText
+;	call PrintText
+;	pop hl
+;	jr .loop
+.pressStart ; FIXED: explain the start button is used to select a move if A is pressed.
+	push hl
+	ld hl, PressStartToLearnText
 	call PrintText
 	pop hl
-	jr .loop
+	jr .menuLoop
 .cancel
 	scf
 	ret
@@ -205,11 +214,26 @@ TryingToLearnText:
 	text_far _TryingToLearnText
 	text_end
 
+PressStartToLearnText:
+	text_far _PressStartToLearnText
+	text_end
+
 OneTwoAndText:
 	text_far _OneTwoAndText
 	text_pause
 	text_asm
+	ld a, [wIsInBattle]
+	and a
+	jr nz, .loadSFX2 ; FIXED: SFX_SWAP doesn't exist in the battle audio engine so it would play an arbitrary sound
 	ld a, SFX_SWAP
+	jr .playSound
+.loadSFX2
+	ld a, $45
+	ld [wFrequencyModifier], a
+	ld a, $f0
+	ld [wTempoModifier], a
+	ld a, SFX_BATTLE_32 ; this is the closest we can probably get to SFX_SWAP here
+.playSound
 	call PlaySoundWaitForCurrent
 	ld hl, PoofText
 	ret
@@ -221,6 +245,6 @@ ForgotAndText:
 	text_far _ForgotAndText
 	text_end
 
-HMCantDeleteText:
-	text_far _HMCantDeleteText
-	text_end
+;HMCantDeleteText: ; FIXED: moves are never considered HMs and can always be deleted if desired
+;	text_far _HMCantDeleteText
+;	text_end
